@@ -11,3 +11,10 @@ def csv_to_dataframe(file_path):
         return df
     except Exception as e:
         print(f"Error reading CSV file: {e}")
+
+def group_and_sort(df):
+    # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
+    df_sorted = df.groupby("user_id").apply(lambda x: x.sort_values(["collected_at"], ascending=True)).reset_index(
+        drop=True)
+    return df_sorted
+
