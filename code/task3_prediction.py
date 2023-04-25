@@ -5,7 +5,7 @@ def get_inactive_days(group):
     inactive_days = group.collected_at.diff().dt.days - 1
     return inactive_days
 
-def prediction_step1(df_sorted, new_user_df):
+def prediction(df_sorted, new_user_df):
     # Schritt 1: Berechnen der Länge und Dauer der nicht-aktiven Tage für jeden Benutzer
     inactive_days = df_sorted.apply(get_inactive_days).reset_index(name='inactive_days')
 
