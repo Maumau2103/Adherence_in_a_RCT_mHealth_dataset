@@ -1,22 +1,40 @@
 import pandas as pd
 import numpy as np
 
-def get_inactive_days(group):
-    inactive_days = group.collected_at.diff().dt.days - 1
-    return inactive_days
+# Laden der Daten
+data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at'])
+other_user_data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv', parse_dates=['collected_at'])
 
-def prediction(df_sorted, new_user_df):
-    # Schritt 1: Berechnen der Länge und Dauer der nicht-aktiven Tage für jeden Benutzer
-    inactive_days = df_sorted.apply(get_inactive_days).reset_index(name='inactive_days')
+# Gruppieren der Daten nach Nutzer-ID
+grouped_data = data.groupby('user_id')
 
-    # Schritt 2: Berechnen der durchschnittlichen Länge und Dauer der nicht-aktiven Tage für jeden Benutzer
-    avg_inactive_days = inactive_days.groupby("user_id")["inactive_days"].mean().reset_index(name='avg_inactive_days')
+# Berechnen der Adherence für jeden Nutzer
+adherence = {}
+for user_id, group in grouped_data:
+    # Sortieren der Daten nach collected_at
+    group = group.sort_values(by='collected_at')
 
-    # Schritt 3: Berechnen der durchschnittlichen Abweichung der Länge und Dauer der nicht-aktiven Tage für jeden Benutzer im Vergleich zum neuen Nutzer
-    new_user_inactive_days = new_user_df.collected_at.diff().dt.days - 1
-    new_user_avg_inactive_days = np.mean(new_user_inactive_days)
-    avg_inactive_days["deviation"] = np.abs(avg_inactive_days["avg_inactive_days"] - new_user_avg_inactive_days)
+    # Berechnen der Zeitdifferenzen zwischen den Datensätzen
+    diffs = np.diff(group['collected_at'])
 
-    # Schritt 4: Sortieren der Benutzer nach aufsteigender Abweichung und Auswahl der 5 ähnlichsten Benutzer
-    most_similar_users = avg_inactive_days.sort_values("deviation").head(5)["user_id"]
-    print(most_similar_users)
+    if len(diffs) > 0:
+        # Zählen der nicht-aktiven Tage (d.h. Tage, an denen keine Daten erfasst wurden)
+        inactive_days = np.sum(diffs > np.timedelta64(1, 'D'))
+
+        # Berechnen der Adherence als Anteil der aktiven Tage
+        adherence[user_id] = 1 - (inactive_days / len(diffs))
+
+# Berechnen der Adherence für den anderen Nutzer
+other_user_adherence = 1 - (
+            np.sum(np.diff(other_user_data['collected_at']) > np.timedelta64(1, 'D')) / len(other_user_data))
+
+# Sortieren der Nutzer nach Ähnlichkeit (d.h. nach Abstand zur Adherence des anderen Nutzers)
+similar_users = sorted(adherence.keys(), key=lambda x: abs(adherence[x] - other_user_adherence))[:5]
+
+# Ausgabe der ähnlichen Nutzer
+print("Die fünf ähnlichsten Nutzer sind:")
+for user_id in similar_users:
+    print(f"- Nutzer {user_id} mit Adherence {adherence[user_id]}")
+
+def svm_learningusers(df_similarusers):
+
