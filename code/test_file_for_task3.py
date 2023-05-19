@@ -2,13 +2,25 @@
 
 from helper import *
 from task3_prediction import *
+import pandas as pd
 
-dataset = 'C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv'
-new_user = 'C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv'
-day_y = 20
+# Beispiel-Nutzerdaten als DataFrame
+users_data = pd.DataFrame({
+    'Attribut1': [1, 4, 7, 10],
+    'Attribut2': [2, 5, 8, 11],
+    'Attribut3': [3, 6, 9, 12],
+    'Zielvariable': ['nein', 'ja', 'nein', 'nein']
+})
 
-# Einlesen der Datensätze als pandas DataFrame
-df_sorted = csv_to_dataframe(dataset)
-new_user_df = csv_to_dataframe(new_user)
+# Rufe die Funktion auf, um den Klassifikator zu trainieren
+classifier = svm_classification(users_data)
 
-prediction(df_sorted, new_user_df)
+# Beispielvorhersage für neue Daten als DataFrame
+new_user = pd.DataFrame({
+    'Attribut1': [13],
+    'Attribut2': [14],
+    'Attribut3': [15]
+})
+prediction = classifier.predict(new_user)
+
+print("Vorhersage:", prediction)

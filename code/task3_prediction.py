@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn import svm
 
 # Laden der Daten
 data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at'])
@@ -36,5 +37,24 @@ print("Die fünf ähnlichsten Nutzer sind:")
 for user_id in similar_users:
     print(f"- Nutzer {user_id} mit Adherence {adherence[user_id]}")
 
-def svm_learningusers(df_similarusers):
+def adding_day_y_adherent(df_similarusers):
+    # return df_similarusers, aber mit dem Attribut day_y_adherent
+    return df_similarusers
 
+def find_similar_users(df_sorted, df_newuser, day_y, k):
+    # return df_similarusers (DataFrame von allen Daten zu den k-ähnlichsten Nutzern)
+    return 0
+
+def svm_classification(df_similarusers):
+    # Extrahiere Attribute und Zielvariablen
+    attributes = df_similarusers.iloc[:, :-1]
+    labels = df_similarusers.iloc[:, -1]
+
+    # Initialisiere den SVM-Klassifikator
+    classifier = svm.SVC()
+
+    # Trainiere den Klassifikator
+    classifier.fit(attributes, labels)
+
+    # Gib den trainierten Klassifikator zurück
+    return classifier
