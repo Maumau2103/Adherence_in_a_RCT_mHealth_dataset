@@ -1,4 +1,5 @@
-import pandas as pd
+from helper import *
+
 
 def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_name='collected_at'):
     # Eingabewerte:
@@ -58,9 +59,3 @@ def calculate_percentage(timelines):
         adherence_percentages[i] = (adherence_percentages[i] / num_users) * 100
 
     return adherence_percentages
-
-def get_user_ids(grouped_data):
-    user_ids = grouped_data['user_id'].unique()
-    return user_ids
-
-
