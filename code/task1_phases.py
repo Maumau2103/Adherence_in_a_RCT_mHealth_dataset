@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_name='collected_at'):
     # Eingabewerte:
     # column_name ist standardmäßig auf "collected_at" eingestellt
@@ -29,3 +28,39 @@ def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_n
             timeline.append(0)
 
     return timeline
+
+
+def get_all_user_timelines(df_sorted, start_day=None, end_day=None, column_name='collected_at'):
+    # Diese Methode soll alle User Timelines in einem mehrdimensionalen Array ausgeben.
+    # Eingabewerte: --> siehe Methode "get_user_timeline"
+
+    user_ids = get_user_ids(df_sorted)
+    timelines = []
+
+    for user_id in user_ids:
+        timeline = get_user_timeline(df_sorted, user_id, start_day=start_day, end_day=end_day, column_name=column_name)
+        timelines.append(timeline)
+
+    return timelines
+
+
+def calculate_percentage(timelines):
+    num_users = len(timelines)
+    timeline_length = len(timelines[0])
+    adherence_percentages = [0] * timeline_length
+
+    for timeline in timelines:
+        for i in range(timeline_length):
+            if timeline[i] == 1:
+                adherence_percentages[i] += 1
+
+    for i in range(timeline_length):
+        adherence_percentages[i] = (adherence_percentages[i] / num_users) * 100
+
+    return adherence_percentages
+
+def get_user_ids(grouped_data):
+    user_ids = grouped_data['user_id'].unique()
+    return user_ids
+
+
