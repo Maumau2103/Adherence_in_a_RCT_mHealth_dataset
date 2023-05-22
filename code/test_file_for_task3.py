@@ -4,6 +4,9 @@ from helper import *
 from task3_prediction import *
 import pandas as pd
 
+df_sorted = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at'])
+df_newuser = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv', parse_dates=['collected_at'])
+
 # Beispiel-Nutzerdaten als DataFrame
 users_data = pd.DataFrame({
     'Attribut1': [1, 4, 7, 10],
@@ -21,11 +24,13 @@ new_user = pd.DataFrame({
     'Attribut2': [14],
     'Attribut3': [15]
 })
-prediction = classifier.predict(new_user)
 
-print("Vorhersage:", prediction)
+prediction(classifier, new_user)
 
-data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/gefiltert.csv')
-updated_data = group_and_sort(data)
+df_sorted_day = add_day_attribute(df_sorted)
+print(df_sorted_day)
+day_y = 20
+df_sorted_day_dayyadherent = add_day_y_adherent(df_sorted_day, day_y)
+print(df_sorted_day_dayyadherent)
 
-print(updated_data)
+df_sorted_day_dayyadherent.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_for_prediction.csv", index=False)

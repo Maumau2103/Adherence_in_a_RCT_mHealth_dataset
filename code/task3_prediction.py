@@ -37,13 +37,25 @@ print("Die fünf ähnlichsten Nutzer sind:")
 for user_id in similar_users:
     print(f"- Nutzer {user_id} mit Adherence {adherence[user_id]}")
 
-def adding_day_y_adherent(df_similarusers):
-    # return df_similarusers, aber mit dem Attribut day_y_adherent
-    return df_similarusers
 
 def find_similar_users(df_sorted, df_newuser, day_y, k):
     # return df_similarusers (DataFrame von allen Daten zu den k-ähnlichsten Nutzern)
     return 0
+
+
+def add_day_y_adherent(df_similarusers, y):
+    # Initialisieren des day_y_adherent-Attributs als False
+    df_similarusers['day_y_adherent'] = False
+
+    # Iteration über die Daten
+    for user_id, group in df_similarusers.groupby('user_id'):
+        # Überprüfen, ob der Tag y für den Nutzer vorhanden ist
+        if y in group['day'].values:
+            # Setzen des day_y_adherent-Attributs auf True
+            df_similarusers.loc[data['user_id'] == user_id, 'day_y_adherent'] = True
+
+    return df_similarusers
+
 
 def svm_classification(df_similarusers):
     # Extrahiere Attribute und Zielvariablen
@@ -58,3 +70,14 @@ def svm_classification(df_similarusers):
 
     # Gib den trainierten Klassifikator zurück
     return classifier
+
+
+def prediction(svm_classifier, df_newuser):
+    # Anwenden des trainierten Klassifikators auf den neuen Nutzer
+    prediction = svm_classifier.predict(df_newuser)
+
+    # Ausgeben des Ergebnisses
+    print("Vorhersage:", prediction)
+
+    # Gib das Ergebnis zurück
+    return prediction
