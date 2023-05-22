@@ -22,6 +22,9 @@ def get_user_ids(grouped_data):
     return user_ids
 
 def add_day_attribute(df_sorted):
+    # Konvertieren von 'collected_at' in das Datumsformat
+    df_sorted['collected_at'] = pd.to_datetime(df_sorted['collected_at'])
+
     # Initialisieren des Tagesattributs
     df_sorted['day'] = 0
 
@@ -31,7 +34,7 @@ def add_day_attribute(df_sorted):
         min_date = group['collected_at'].min()
 
         # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-        df_sorted.loc[df_sorted['user_id'] == user_id, 'day'] = (pd.to_datetime(df_sorted.loc[df_sorted['user_id'] == user_id, 'collected_at']) - pd.to_datetime(min_date)).dt.days + 1
+        df_sorted.loc[df_sorted['user_id'] == user_id, 'day'] = (df_sorted.loc[df_sorted['user_id'] == user_id, 'collected_at'].dt.date - min_date.date()).dt.days + 1
 
         # Konvertieren in Ganzzahl
         df_sorted['day'] = df_sorted['day'].astype(int)
