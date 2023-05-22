@@ -24,3 +24,8 @@ new_user = pd.DataFrame({
 prediction = classifier.predict(new_user)
 
 print("Vorhersage:", prediction)
+
+data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/gefiltert.csv')
+updated_data = group_and_sort(data)
+
+print(updated_data)
