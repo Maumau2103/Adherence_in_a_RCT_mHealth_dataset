@@ -32,5 +32,7 @@ def group_and_sort(df):
 
     return df_sorted
 
-
+def get_user_ids(grouped_data):
+    user_ids = grouped_data['user_id'].unique()
+    return user_ids
 
