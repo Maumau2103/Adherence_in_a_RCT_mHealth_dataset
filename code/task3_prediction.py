@@ -1,12 +1,48 @@
 import pandas as pd
 import numpy as np
 from sklearn import svm
+from sklearn.neighbors import NearestNeighbors
 from helper import *
+from task5_adherence_level import *
 
 
-def find_similar_users(df_sorted, df_newuser, day_y, k):
-    # return df_similarusers (DataFrame von allen Daten zu den k-ähnlichsten Nutzern)
-    return 0
+def find_similar_users(df_sorted, df_newuser, k):
+    # Initialisierung eines leeren DataFrames
+    df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
+
+    # user_id und adherence_level vom neuen Nutzer
+    newuser_id = df_newuser['user_id'].iloc[0]
+    newuser_adh_level = get_user_adh_level(df_newuser, newuser_id)
+
+    # Iteration über die eindeutigen user_ids
+    for user_id in df_sorted['user_id'].unique():
+        # Erstellen einer Zeile mit user_id und adherence_level
+        row = {'user_id': user_id, 'adherence_level': get_user_adh_level(df_sorted, user_id)}
+
+        # Hinzufügen der Zeile zum Ergebnis-DataFrame
+        df_adh_levels = df_adh_levels.append(row, ignore_index=True)
+
+    # Extrahieren der Merkmale für das k-NN-Modell
+    features = df_adh_levels['adherence_level'].values.reshape(-1, 1)
+
+    # Initialisierung des k-NN-Modells
+    model = NearestNeighbors(n_neighbors=k)
+    model.fit(features)
+
+    # Vorhersage der k ähnlichsten Nutzer für den neuen Nutzer
+    new_user_adherence = [[newuser_adh_level]]
+    distances, indices = model.kneighbors(new_user_adherence)
+
+    # Extrahieren der ähnlichsten Nutzer aus dem ursprünglichen Datensatz
+    similar_users = df_adh_levels.iloc[indices[0]]
+
+    print("Die " + str(k) + " ähnlichsten Nutzer sind:")
+    print(similar_users)
+
+    # Herausfiltern von allen similar_users aus df_sorted
+    df_similarusers = df_sorted[df_sorted['user_id'].isin(similar_users['user_id'])]
+
+    return df_similarusers
 
 
 def add_day_y_adherent(df_similarusers, y):
@@ -18,7 +54,7 @@ def add_day_y_adherent(df_similarusers, y):
         # Überprüfen, ob der Tag y für den Nutzer vorhanden ist
         if y in group['day'].values:
             # Setzen des day_y_adherent-Attributs auf True
-            df_similarusers.loc[data['user_id'] == user_id, 'day_y_adherent'] = True
+            df_similarusers.loc[df_similarusers['user_id'] == user_id, 'day_y_adherent'] = True
 
     return df_similarusers
 
@@ -59,39 +95,3 @@ def prediction(svm_classifier, df_newuser):
 
     # Gib das Ergebnis zurück
     return prediction
-
-
-# Laden der Daten
-data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at'])
-other_user_data = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv', parse_dates=['collected_at'])
-
-# Gruppieren der Daten nach Nutzer-ID
-grouped_data = data.groupby('user_id')
-
-# Berechnen der Adherence für jeden Nutzer
-adherence = {}
-for user_id, group in grouped_data:
-    # Sortieren der Daten nach collected_at
-    group = group.sort_values(by='collected_at')
-
-    # Berechnen der Zeitdifferenzen zwischen den Datensätzen
-    diffs = np.diff(group['collected_at'])
-
-    if len(diffs) > 0:
-        # Zählen der nicht-aktiven Tage (d.h. Tage, an denen keine Daten erfasst wurden)
-        inactive_days = np.sum(diffs > np.timedelta64(1, 'D'))
-
-        # Berechnen der Adherence als Anteil der aktiven Tage
-        adherence[user_id] = 1 - (inactive_days / len(diffs))
-
-# Berechnen der Adherence für den anderen Nutzer
-other_user_adherence = 1 - (
-            np.sum(np.diff(other_user_data['collected_at']) > np.timedelta64(1, 'D')) / len(other_user_data))
-
-# Sortieren der Nutzer nach Ähnlichkeit (d.h. nach Abstand zur Adherence des anderen Nutzers)
-similar_users = sorted(adherence.keys(), key=lambda x: abs(adherence[x] - other_user_adherence))[:5]
-
-# Ausgabe der ähnlichen Nutzer
-print("Die fünf ähnlichsten Nutzer sind:")
-for user_id in similar_users:
-    print(f"- Nutzer {user_id} mit Adherence {adherence[user_id]}")
