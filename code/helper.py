@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def csv_to_dataframe(file_path):
     """
@@ -14,12 +15,15 @@ def csv_to_dataframe(file_path):
 
 
 def group_and_sort(df):
+
     # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
+
     df_sorted = df.groupby("user_id").apply(lambda x: x.sort_values(["collected_at"], ascending=True)).reset_index(drop=True)
     return df_sorted
 
 
 def get_user_ids(grouped_data):
+    # Die Methode gibt alle User IDs in einem sortierten Array aus.
     user_ids = grouped_data['user_id'].unique()
     return user_ids
 
@@ -65,3 +69,17 @@ def filter_by_day(df_similarusers, day):
     filtered_data = df_similarusers[df_similarusers['day'] == day]
 
     return filtered_data
+
+def find_path(file_name):
+    # Suche den Projektordner basierend auf dem aktuellen Dateipfad
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    PRJ_PATH = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+    # Definiere den Pfad zum Rohdatenordner
+    PRJ_DATA_RAW_PATH = os.path.join(PRJ_PATH, "data", "raw")
+
+    # Lese die Datei im Rohdatenordner ein
+    file_path = os.path.join(PRJ_DATA_RAW_PATH, file_name)
+    df_map = pd.read_csv(file_path)
+
+    return df_map

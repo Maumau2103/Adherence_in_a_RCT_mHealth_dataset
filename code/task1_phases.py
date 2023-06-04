@@ -1,4 +1,7 @@
 from helper import *
+import numpy as np
+import matplotlib.pylab as plt
+import ruptures as rpt
 
 
 def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_name='collected_at'):
@@ -59,3 +62,17 @@ def calculate_percentage(timelines):
         adherence_percentages[i] = (adherence_percentages[i] / num_users) * 100
 
     return adherence_percentages
+
+def cpd_binseg(adherence_percentages):
+
+    # Ruptures liefert mehrere spezifische Anwendungfsfälle, wie z.B. die Erkennung von Mustern.
+    # Da wir hier einen Anwendungfall haben in dem die prozentuale Nutzung der User exponentiell abnimmt, nutzen wir
+    # das Modell "exponential"
+
+    model = "exponential"
+
+    # Ruptures enthält eine Methode für die Binäre Segmentierung. Wie oben beschrieben geben wir bei dem Parameter
+    # "exponentiell" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
+    # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
+
+    algo = rpt.Binseg(model=model).fit(adherence_percentages)
