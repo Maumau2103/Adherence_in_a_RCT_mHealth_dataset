@@ -13,3 +13,5 @@ print(perc_test_task1)
 signal, bkps = rpt.pw_constant(500, 2, 3, noise_std=4)
 
 print(type(signal))
+
+print(cpd_binseg(calculate_percentage(get_all_user_timelines(df_map))))

@@ -1,8 +1,5 @@
 from helper import *
-import numpy as np
-import matplotlib.pylab as plt
 import ruptures as rpt
-
 
 def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_name='collected_at'):
     # Eingabewerte:
@@ -63,16 +60,43 @@ def calculate_percentage(timelines):
 
     return adherence_percentages
 
-def cpd_binseg(adherence_percentages):
 
+def cpd_binseg(adherence_percentages):
     # Ruptures liefert mehrere spezifische Anwendungfsfälle, wie z.B. die Erkennung von Mustern.
     # Da wir hier einen Anwendungfall haben in dem die prozentuale Nutzung der User exponentiell abnimmt, nutzen wir
     # das Modell "exponential"
 
     model = "exponential"
 
+    # signal = adherence_percentages
+
     # Ruptures enthält eine Methode für die Binäre Segmentierung. Wie oben beschrieben geben wir bei dem Parameter
     # "exponentiell" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
     # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
 
     algo = rpt.Binseg(model=model).fit(adherence_percentages)
+    my_bkps = algo.predict(n_bkps=3)
+    # my_bkps = algo.predict(pen=np.log(n) * dim * sigma ** 2)
+    # or
+    # my_bkps = algo.predict(epsilon=3 * n * sigma ** 2)
+    # rpt.show.display(signal, bkps, my_bkps, figsize=(10, 6))
+    # plt.show()
+    return my_bkps
+
+def cpd_botupseg(adherence_percentages):
+
+    model = "exponential"
+
+    algo = rpt.BottomUp(model=model).fit(adherence_percentages)
+    my_bkps = algo.predict(n_bkps=3)
+
+    return my_bkps
+
+def cpd_windowseg(adherence_percentages):
+
+    model = "exponential"
+
+    algo = rpt.Window(width=40, model=model).fit(adherence_percentages)
+    my_bkps = algo.predict(n_bkps=3)
+
+    return my_bkps

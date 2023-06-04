@@ -1,18 +1,6 @@
 import pandas as pd
 import os
-
-def csv_to_dataframe(file_path):
-    """
-    Read a CSV file and return a DataFrame object.
-    :param file_path: The path to the CSV file to read.
-    :return: A DataFrame object representing the data in the CSV file.
-    """
-    try:
-        df = pd.read_csv(file_path)
-        return df
-    except Exception as e:
-        print(f"Error reading CSV file: {e}")
-
+from setup import *
 
 def group_and_sort(df):
 
@@ -83,3 +71,18 @@ def find_path(file_name):
     df_map = pd.read_csv(file_path)
 
     return df_map
+
+
+# Brauchen wir eigenltich nicht mehr. Wir haben find_path macht das gleiche + sucht den Pfad selbstständig
+# Suchen wo das verwendet wird und durch find_path ersetzen.
+def csv_to_dataframe(file_path):
+    """
+    Read a CSV file and return a DataFrame object.
+    :param file_path: The path to the CSV file to read.
+    :return: A DataFrame object representing the data in the CSV file.
+    """
+    try:
+        df = pd.read_csv(file_path)
+        return df
+    except Exception as e:
+        print(f"Error reading CSV file: {e}")
