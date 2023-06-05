@@ -11,7 +11,7 @@ def get_user_timeline(df_sorted, user_id, start_day=None, end_day=None, column_n
     user_df = df_sorted[df_sorted['user_id'] == user_id]
 
     # Schritt 2: Konvertieren des Datums oder Werts vom ISO-Format in Pandas-Timestamps
-    user_df[column_name] = pd.to_datetime(user_df[column_name])
+    user_df.loc[:, column_name] = pd.to_datetime(user_df[column_name])
 
     # Schritt 3: Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
     if start_day is None:
