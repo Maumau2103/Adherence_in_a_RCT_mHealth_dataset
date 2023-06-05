@@ -75,7 +75,9 @@ def cpd_binseg(adherence_percentages):
     # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
 
     algo = rpt.Binseg(model=model).fit(adherence_percentages)
+
     my_bkps = algo.predict(n_bkps=3)
+
     # my_bkps = algo.predict(pen=np.log(n) * dim * sigma ** 2)
     # or
     # my_bkps = algo.predict(epsilon=3 * n * sigma ** 2)
