@@ -3,7 +3,6 @@ import os
 from setup import *
 
 def group_and_sort(df):
-
     # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
 
     df_sorted = df.groupby("user_id").apply(lambda x: x.sort_values(["collected_at"], ascending=True)).reset_index(drop=True)
@@ -36,27 +35,6 @@ def add_day_attribute(df_sorted):
 
     return df_sorted
 
-
-def get_all_days(df_newuser):
-    # Überprüfen, ob die Spalte "day" vorhanden ist
-    if 'day' not in df_newuser.columns:
-        raise ValueError("Die Spalte 'day' existiert nicht im Datensatz.")
-
-    # Eindeutige Werte für das Attribut "day" in einer Liste speichern
-    all_days = df_newuser['day'].unique().tolist()
-
-    return all_days
-
-
-def filter_by_day(df_similarusers, day):
-    # Überprüfen, ob die Spalte "day" vorhanden ist
-    if 'day' not in df_similarusers.columns:
-        raise ValueError("Die Spalte 'day' existiert nicht im Datensatz.")
-
-    # Filtern der Zeilen mit dem angegebenen Wert für "day"
-    filtered_data = df_similarusers[df_similarusers['day'] == day]
-
-    return filtered_data
 
 def find_path(file_name):
     # Suche den Projektordner basierend auf dem aktuellen Dateipfad
