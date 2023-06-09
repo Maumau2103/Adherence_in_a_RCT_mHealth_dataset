@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from helper import *
 from task1_phases import get_user_timeline
-from task5_adherence_level import get_user_adh_level
+from task5_adherence_level import get_user_adh_percentage
 
 
 def cluster_timelines(df_sorted, num_clusters=3, start_day=None, end_day=None):
@@ -33,7 +33,7 @@ def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=
     # Iterate over each unique user ID
     for user_id in df_sorted[s_table_key].unique():
         # Get the adherence level for each user using the existing function
-        adh_level = get_user_adh_level(df_sorted, user_id, start_day, end_day)
+        adh_level = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
         all_adh_levels.append(adh_level)
 
     # Convert the adherence levels to a NumPy array

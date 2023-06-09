@@ -30,12 +30,12 @@ def find_similar_users(df_sorted, df_newuser, k):
 
     # user_id und adherence_level vom neuen Nutzer
     newuser_id = df_newuser.iloc[0,1]
-    newuser_adh_level = get_user_adh_level(df_newuser, newuser_id)
+    newuser_adh_level = get_user_adh_percentage(df_newuser, newuser_id)
 
     # Iteration über die eindeutigen user_ids
     for user_id in df_sorted['user_id'].unique():
         # Erstellen einer Zeile mit user_id und adherence_level
-        row = {'user_id': user_id, 'adherence_level': get_user_adh_level(df_sorted, user_id)}
+        row = {'user_id': user_id, 'adherence_level': get_user_adh_percentage(df_sorted, user_id)}
 
         # Hinzufügen der Zeile zum Ergebnis-DataFrame
         df_adh_levels = df_adh_levels.append(row, ignore_index=True)
