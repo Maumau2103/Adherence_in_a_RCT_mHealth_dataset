@@ -5,30 +5,30 @@ from setup import *
 def group_and_sort(df):
     # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
 
-    df_sorted = df.groupby("user_id").apply(lambda x: x.sort_values(["collected_at"], ascending=True)).reset_index(drop=True)
+    df_sorted = df.groupby(s_table_key).apply(lambda x: x.sort_values([s_table_sort_by], ascending=True)).reset_index(drop=True)
     return df_sorted
 
 
 def get_user_ids(grouped_data):
     # Die Methode gibt alle User IDs in einem sortierten Array aus.
-    user_ids = grouped_data['user_id'].unique()
+    user_ids = grouped_data[s_table_key].unique()
     return user_ids
 
 
 def add_day_attribute(df_sorted):
     # Konvertieren von 'collected_at' in das Datumsformat
-    df_sorted['collected_at'] = pd.to_datetime(df_sorted['collected_at'])
+    df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
 
     # Initialisieren des Tagesattributs
     df_sorted['day'] = 0
 
     # Iteration über die Daten
-    for user_id, group in df_sorted.groupby('user_id'):
+    for user_id, group in df_sorted.groupby(s_table_key):
         # Bestimmung des ältesten Datums pro user_id
-        min_date = group['collected_at'].min()
+        min_date = group[s_table_sort_by].min()
 
         # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-        df_sorted.loc[df_sorted['user_id'] == user_id, 'day'] = (df_sorted.loc[df_sorted['user_id'] == user_id, 'collected_at'].dt.date - min_date.date()).dt.days + 1
+        df_sorted.loc[df_sorted[s_table_key] == user_id, 'day'] = (df_sorted.loc[df_sorted[s_table_key] == user_id, s_table_sort_by].dt.date - min_date.date()).dt.days + 1
 
         # Konvertieren in Ganzzahl
         df_sorted['day'] = df_sorted['day'].astype(int)
