@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import OrdinalEncoder
 from helper import *
 from task5_adherence_level import *
 
@@ -16,15 +17,27 @@ def data_preparation(df):
                  'collected_at_movement', 'collected_at_stress', 'collected_at_emotion', 'collected_at_diary_q11']
     df = df.drop(drop_list, axis=1)
 
-    # Umwandeln der object-Werte
-    string_columns = ['locale', 'client']
-    df[string_columns] = df[string_columns].astype('str')
+    # Umwandeln der object-Werte mithilfe des OrdinalEncoders
+    encoder = OrdinalEncoder(dtype='int64')
+    df[['locale', 'client']] = encoder.fit_transform(df[['locale', 'client']])
+
+    # Umwandeln des diary Eintrags
     df['value_diary_q11'] = df['value_diary_q11'].apply(lambda x: 1 if isinstance(x, str) else 0)
+
+    # Aufteilung des collected_at Attributs in mehrere Spalten
+    df['collected_at_year'] = df['collected_at'].dt.year
+    df['collected_at_month'] = df['collected_at'].dt.month
+    df['collected_at_day'] = df['collected_at'].dt.day
+    df['collected_at_hour'] = df['collected_at'].dt.hour
+    df['collected_at_minute'] = df['collected_at'].dt.minute
+
+    # Hinzufügen des day-Attributes
+    df = add_day_attribute(df)
 
     return df
 
 
-def find_similar_users(df_sorted, df_newuser, k):
+def find_similar_users(df_prediction, df_newuser, k):
     # Initialisierung eines leeren DataFrames
     df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
 
@@ -33,9 +46,9 @@ def find_similar_users(df_sorted, df_newuser, k):
     newuser_adh_level = get_user_adh_percentage(df_newuser, newuser_id)
 
     # Iteration über die eindeutigen user_ids
-    for user_id in df_sorted['user_id'].unique():
+    for user_id in df_prediction['user_id'].unique():
         # Erstellen einer Zeile mit user_id und adherence_level
-        row = {'user_id': user_id, 'adherence_level': get_user_adh_percentage(df_sorted, user_id)}
+        row = {'user_id': user_id, 'adherence_level': get_user_adh_percentage(df_prediction, user_id)}
 
         # Hinzufügen der Zeile zum Ergebnis-DataFrame
         df_adh_levels = df_adh_levels.append(row, ignore_index=True)
@@ -58,31 +71,21 @@ def find_similar_users(df_sorted, df_newuser, k):
     print(similar_users)
 
     # Herausfiltern von allen similar_users aus df_sorted
-    df_similarusers = df_sorted[df_sorted['user_id'].isin(similar_users['user_id'])]
-
-    return df_similarusers
-
-
-def add_attributes(df_similarusers, y):
-    add_day_attribute(df_similarusers)
-    add_day_y_adherent(df_similarusers, y)
+    df_similarusers = df_prediction[df_prediction['user_id'].isin(similar_users['user_id'])]
 
     return df_similarusers
 
 
 def add_day_y_adherent(df_similarusers, y):
     # Initialisieren des day_y_adherent-Attributs als False
-    df_similarusers['day_y_adherent'] = False
+    df_similarusers['day_y_adherent'] = 0
 
     # Iteration über die Daten
     for user_id, group in df_similarusers.groupby('user_id'):
         # Überprüfen, ob der Tag y für den Nutzer vorhanden ist
-        timeline = get_user_timeline(df_similarusers, user_id)
-        if timeline[y] == 1:
-            df_similarusers.loc[df_similarusers['user_id'] == user_id, 'day_y_adherent'] = True
-        #if y in group['day'].values:
+        if y in group['day'].values:
             # Setzen des day_y_adherent-Attributs auf True
-            #df_similarusers.loc[df_similarusers['user_id'] == user_id, 'day_y_adherent'] = True
+            df_similarusers.loc[df_similarusers['user_id'] == user_id, 'day_y_adherent'] = 1
 
     return df_similarusers
 
@@ -99,16 +102,20 @@ def svm_classification(df_similarusers, df_newuser):
     return classifiers
 
 
-def svm_classification_helper(df_similarusers):
+def svm_classification_helper(df):
     # Extrahiere Attribute und Zielvariablen
-    attributes = df_similarusers.iloc[:, :-1]
-    labels = df_similarusers.iloc[:, -1]
+    df_drop = df.drop(s_table_sort_by, axis=1)
+    features = df_drop.iloc[:, :-1]
+    label = df.iloc[:, -1]
+
+    # Aufteilung in Trainingsdaten und Testdaten
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Initialisiere den SVM-Klassifikator
     classifier = svm.SVC()
 
     # Trainiere den Klassifikator
-    classifier.fit(attributes, labels)
+    classifier.fit(features, label)
 
     # Gib den trainierten Klassifikator zurück
     return classifier

@@ -1,10 +1,10 @@
 from task1_phases import *
+from setup import *
 
-
-def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None):
+def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, column=s_table_sort_by):
 
     # get timeline array from Task 1
-    timeline = get_user_timeline(df_sorted, user_id, start_day, end_day, s_table_sort_by)
+    timeline = get_user_timeline(df_sorted, user_id, start_day, end_day, column)
 
     # create adherence level variable
     adh_percentage = float(0)

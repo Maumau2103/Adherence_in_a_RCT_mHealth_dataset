@@ -8,7 +8,7 @@ def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, colum
     # "value_diary_q11" --> Hat der User einen Kommentar in der App eingegeben?
 
     # Schritt 1: Herausfiltern aller Einträge eines spezifischen Nutzers
-    user_df = df_sorted[df_sorted[s_table_sort_by] == key_column]
+    user_df = df_sorted[df_sorted[s_table_key] == key_column]
 
     # Schritt 2: Konvertieren des Datums oder Werts vom ISO-Format in Pandas-Timestamps
     user_df.loc[:, column] = pd.to_datetime(user_df[column])
