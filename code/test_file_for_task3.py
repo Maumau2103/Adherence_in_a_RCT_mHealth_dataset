@@ -17,6 +17,7 @@ df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
 df_newuser = df_prediction[df_prediction['user_id'] == 2107].copy()
+df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv", index=False)
 
 # Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
 df_similarusers = find_similar_users(df_prediction, df_newuser, 5)

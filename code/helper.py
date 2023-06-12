@@ -4,7 +4,6 @@ from setup import *
 
 def group_and_sort(df):
     # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
-
     df_sorted = df.groupby(s_table_key).apply(lambda x: x.sort_values([s_table_sort_by], ascending=True)).reset_index(drop=True)
     return df_sorted
 

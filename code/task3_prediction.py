@@ -24,6 +24,9 @@ def data_preparation(df):
     # Umwandeln des diary Eintrags
     df['value_diary_q11'] = df['value_diary_q11'].apply(lambda x: 1 if isinstance(x, str) else 0)
 
+    # Umwandeln von collected_at in datetime Objekte
+    df['collected_at'] = pd.to_datetime(df['collected_at'])
+
     # Aufteilung des collected_at Attributs in mehrere Spalten
     df['collected_at_year'] = df['collected_at'].dt.year
     df['collected_at_month'] = df['collected_at'].dt.month
