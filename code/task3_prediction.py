@@ -2,9 +2,13 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from sklearn.neighbors import NearestNeighbors
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import OrdinalEncoder
 from helper import *
 from task5_adherence_level import *
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 
 def data_preparation(df):
@@ -18,8 +22,8 @@ def data_preparation(df):
     df = df.drop(drop_list, axis=1)
 
     # Umwandeln der object-Werte mithilfe des OrdinalEncoders
-    encoder = OrdinalEncoder(dtype='int64')
-    df[['locale', 'client']] = encoder.fit_transform(df[['locale', 'client']])
+    #encoder = OrdinalEncoder(dtype='int64')
+    #df[['locale', 'client']] = encoder.fit_transform(df[['locale', 'client']])
 
     # Umwandeln des diary Eintrags
     df['value_diary_q11'] = df['value_diary_q11'].apply(lambda x: 1 if isinstance(x, str) else 0)
@@ -30,9 +34,7 @@ def data_preparation(df):
     # Aufteilung des collected_at Attributs in mehrere Spalten
     df['collected_at_year'] = df['collected_at'].dt.year
     df['collected_at_month'] = df['collected_at'].dt.month
-    df['collected_at_day'] = df['collected_at'].dt.day
-    df['collected_at_hour'] = df['collected_at'].dt.hour
-    df['collected_at_minute'] = df['collected_at'].dt.minute
+    df['collected_at_time'] = (df['collected_at'].dt.hour * 60 + df['collected_at'].dt.minute)
 
     # Hinzufügen des day-Attributes
     df = add_day_attribute(df)
@@ -93,50 +95,55 @@ def add_day_y_adherent(df_similarusers, y):
     return df_similarusers
 
 
-def svm_classification(df_similarusers, df_newuser):
-    df_newuser_day = add_day_attribute(df_newuser)
-    days = df_newuser_day['day'].unique().tolist()
-    classifiers = []
+def svm_classification(df_similarusers, df_newuser, day_y):
+    # Hinzufügen des day_y_adherent Attributs
+    df_similarusers = add_day_y_adherent(df_similarusers, day_y)
 
-    for day in days:
-        df_similarusers_filtered = df_similarusers[df_similarusers['day'] == day]
-        classifiers.append(svm_classification_helper(df_similarusers_filtered))
+    # Entfernen aller unnötigen Spalten (alle kategorischen Attribute)
+    columns_to_remove = ['collected_at', 'user_id', 'id', 'client', 'day', 'locale']
+    df_similarusers_filtered = df_similarusers.drop(columns=columns_to_remove)
+    df_newuser_filtered = df_newuser.drop(columns=columns_to_remove)
 
-    return classifiers
-
-
-def svm_classification_helper(df):
     # Extrahiere Attribute und Zielvariablen
-    df_drop = df.drop(s_table_sort_by, axis=1)
-    features = df_drop.iloc[:, :-1]
-    label = df.iloc[:, -1]
+    X = df_similarusers_filtered.drop('day_y_adherent', axis=1)
+    y = df_similarusers_filtered['day_y_adherent']
 
-    # Aufteilung in Trainingsdaten und Testdaten
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # SVM-Modell initialisieren und Accuracy testen
+    svm_model = SVC()
+    ml_model_accuracy(X, y, svm_model, 50)
 
-    # Initialisiere den SVM-Klassifikator
-    classifier = svm.SVC()
+    # Trainiere den SVM-Klassifikator
+    svm_model.fit(X, y)
 
-    # Trainiere den Klassifikator
-    classifier.fit(features, label)
+    # Vorhersagen für den neuen Datensatz machen
+    predictions = svm_model.predict(df_newuser_filtered)
+    print("Adherencewahrscheinlichkeit an Tag " + str(day_y) + ": " + str(sum(predictions) / len(predictions)))
 
-    # Gib den trainierten Klassifikator zurück
-    return classifier
+    return predictions
 
 
-def prediction(svm_classifiers, df_newuser):
-    predictions = []
+def RandomForest_classification(df_similarusers, df_newuser, day_y):
+    # Hinzufügen des day_y_adherent Attributs (Label)
+    df_similarusers = add_day_y_adherent(df_similarusers, day_y)
 
-    df_newuser_day = add_day_attribute(df_newuser)
-    days = df_newuser_day['day'].unique().tolist()
+    # Entfernen aller unnötigen Spalten (alle kategorischen Attribute)
+    columns_to_remove = ['collected_at', 'user_id', 'id', 'client', 'day', 'locale']
+    df_similarusers_filtered = df_similarusers.drop(columns=columns_to_remove)
+    df_newuser_filtered = df_newuser.drop(columns=columns_to_remove)
 
-    for day in days:
-        df_newuser_day_filtered = df_newuser_day[df_newuser_day['day'] == day]
-        prediction = svm_classifiers[day].predict(df_newuser_day_filtered)
-        predictions.append(prediction)
+    # Datensatz aufteilen in Features und Label
+    X = df_similarusers_filtered.drop('day_y_adherent', axis=1)
+    y = df_similarusers_filtered['day_y_adherent']
 
-    # Ausgeben des Ergebnisses
-    print("Vorhersage:", predictions)
+    # RandomForest-Modell initialisieren und Accuracy testen
+    rf_model = RandomForestClassifier(random_state=42)
+    ml_model_accuracy(X, y, rf_model, 50)
 
-    # Gib das Ergebnis zurück
+    # Trainiere den RandomForest-Klassifikator
+    rf_model.fit(X, y)
+
+    # Vorhersagen für den neuen Datensatz machen
+    predictions = rf_model.predict(df_newuser_filtered)
+    print("Adherencewahrscheinlichkeit an Tag " + str(day_y) + ": " + str(sum(predictions)/len(predictions)))
+
     return predictions

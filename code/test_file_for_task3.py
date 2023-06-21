@@ -1,5 +1,3 @@
-# run this file to test your algorithms and functionalities
-
 from helper import *
 from task3_prediction import *
 from task1_phases import *
@@ -16,20 +14,23 @@ df = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/gefiltert.
 df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
-df_newuser = df_prediction[df_prediction['user_id'] == 2107].copy()
+df_newuser = df_prediction[df_prediction['user_id'] == 40362].copy()
 df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/new_user.csv", index=False)
 
 # Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
-df_similarusers = find_similar_users(df_prediction, df_newuser, 5)
+df_similarusers = find_similar_users(df_prediction, df_newuser, 10)
 
-# Hinzufügen des day_y_adherent Attributs
-df_similarusers = add_day_y_adherent(df_similarusers, 20)
+# Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
+predictions_svm = svm_classification(df_similarusers, df_newuser, 20)
+print(predictions_svm)
 
-# Anlegen von SVM_Klassifikatoren
-classifiers = svm_classification(df_similarusers, df_newuser)
+# Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit RandomForest
+predictions_rf = RandomForest_classification(df_similarusers, df_newuser, 20)
+print(predictions_rf)
 
-# Berechnen der predictions
-#predictions = prediction(classifiers, df_newuser)
+# tatsächlicher Wert für unseren neuen User
+add_day_y_adherent(df_newuser, 20)
+print("tatsächliche Adherence für diesen Nutzer an dem Tag: " + str(df_newuser.iloc[0]['day_y_adherent']))
 
 # alle Werte müssen numerisch sein, damit der SVM-Klassifikator funktioniert
 # Ein SVM-Algorithmus mit allen Daten von similar_users, wobei die user_id rausgenommen wird und vllt. locale und client auch

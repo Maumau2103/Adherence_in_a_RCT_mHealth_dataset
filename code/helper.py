@@ -1,5 +1,9 @@
 import pandas as pd
 import os
+
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
 from setup import *
 
 def group_and_sort(df):
@@ -48,3 +52,25 @@ def find_path(file_name):
     df_map = pd.read_csv(file_path)
 
     return df_map
+
+
+def ml_model_accuracy(X, y, model, run):
+    sum_score = 0
+    scores = []
+
+    for i in range(run):
+        # Aufteilung in Trainingsdaten und Testdaten
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=i)
+
+        # Trainiere den ML-Klassifikator auf den Trainingsdaten
+        model.fit(X_train, y_train)
+
+        # Predicte das Label auf den Testdaten
+        y_pred = model.predict(X_test)
+
+        # Berechne den accuracy score durch Vergleich der predicteten Label und den tatsächlichen Labeln
+        score = accuracy_score(y_test, y_pred)
+        scores.append(score)
+        sum_score = sum_score + score
+
+    print("Durchschnittliche Test Accuracy:" + str(sum_score / len(scores)))
