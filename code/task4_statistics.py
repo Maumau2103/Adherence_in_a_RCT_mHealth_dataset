@@ -1,9 +1,11 @@
 from helper import *
 from task1_phases import *
+from task2_groups import *
 import pandas as pd
 import numpy as np
 pd.options.mode.chained_assignment = None  # default='warn'
 import matplotlib.pyplot as plt
+
 
 def show_user_timeline(df_sorted, user_id, step=50):
     # Berechnen der Timeline für einen User
@@ -44,5 +46,9 @@ def show_user_timeline(df_sorted, user_id, step=50):
 
     # Diagramm anzeigen
     plt.show()
+
+
+def show_cluster_timelines(df_sorted):
+    cluster = cluster_timelines(df_sorted)
 
 

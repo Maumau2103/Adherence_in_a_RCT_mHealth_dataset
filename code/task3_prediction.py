@@ -11,7 +11,7 @@ from imblearn.under_sampling import RandomUnderSampler
 import matplotlib.pyplot as plt
 
 
-def task_5_prediction(df, new_user, day_y, nearest_neighbors=10, cv=10, model=0):
+def task3_prediction(df, new_user, day_y, nearest_neighbors=10, cv=10, model=0):
     df_prediction = data_preparation(df)
     df_newuser = data_preparation(new_user)
 
@@ -66,6 +66,7 @@ def find_similar_users(df_prediction, df_newuser, k):
     newuser_adh_level = get_user_adh_percentage(df_newuser, newuser_id)
     newuser_length = df_newuser.loc[df_newuser['user_id'] == newuser_id, 'day'].max()
     print(str(newuser_id) + ': '+ str(newuser_adh_level) + ', ' + str(newuser_length))
+    print()
 
     # Iteration über die eindeutigen user_ids
     for user_id in df_prediction['user_id'].unique():
@@ -91,6 +92,7 @@ def find_similar_users(df_prediction, df_newuser, k):
 
     print(f"Die {k} ähnlichsten Nutzer sind:")
     print(similar_users)
+    print()
 
     # Herausfiltern von allen similar_users aus df_sorted
     df_similarusers = df_prediction[df_prediction['user_id'].isin(similar_users['user_id'])]
