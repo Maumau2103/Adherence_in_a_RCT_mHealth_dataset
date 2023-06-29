@@ -47,7 +47,7 @@ def find_path(file_name):
     PRJ_PATH = os.path.abspath(os.path.join(current_dir, os.pardir))
 
     # Definiere den Pfad zum Rohdatenordner
-    PRJ_DATA_RAW_PATH = os.path.join(PRJ_PATH, "data", "raw")
+    PRJ_DATA_RAW_PATH = os.path.join(PRJ_PATH, "data")
 
     # Lese die Datei im Rohdatenordner ein
     file_path = os.path.join(PRJ_DATA_RAW_PATH, file_name)

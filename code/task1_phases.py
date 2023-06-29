@@ -11,6 +11,7 @@ def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, colum
     user_df = df_sorted[df_sorted[s_table_key] == key_column]
 
     # Schritt 2: Konvertieren des Datums oder Werts vom ISO-Format in Pandas-Timestamps
+    user_df = user_df.copy()
     user_df.loc[:, column] = pd.to_datetime(user_df[column])
 
     # Schritt 3: Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
@@ -78,7 +79,7 @@ def cpd_binseg(all_adherence_percentages):
 
     my_bkps = algo.predict(n_bkps=3)
 
-    # my_bkps = algo.predict(pen=np.log(n) * dim * sigma ** 2)
+    my_bkps = algo.predict(pen=np.log(n) * dim * sigma ** 2)
     # or
     # my_bkps = algo.predict(epsilon=3 * n * sigma ** 2)
 
