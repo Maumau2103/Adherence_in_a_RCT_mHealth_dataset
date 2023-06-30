@@ -7,6 +7,6 @@ s_table_sort_by = 'collected_at'
 # s_end_day = 84
 # 
 s_cpd_mode = True
-s_num_change_points =
+s_num_change_points = 3
 
 # parameter phases:

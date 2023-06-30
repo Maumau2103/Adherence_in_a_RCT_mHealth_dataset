@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 
-from setup import *
+from util import setup
 
 def group_and_sort(df):
     # Gruppieren des DataFrame nach user_id und Sortieren nach collected_at
