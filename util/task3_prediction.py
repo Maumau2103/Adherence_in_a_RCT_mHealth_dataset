@@ -131,9 +131,15 @@ def svm_classification(df_similarusers, df_newuser, day_y, k_fold):
 
     # Anzahl der Beispiele für jede Klasse zählen
     class_counts = y.value_counts()
+    unique_values = class_counts.unique()
 
-    if len(class_counts) < 2:
-        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {newuser_adh_level:.3f}")
+    if len(unique_values) == 1:
+        if unique_values[0] == 0:
+            adherence_probability = (0 + newuser_adh_level) / 2
+            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
+        elif unique_values[0] == 1:
+            adherence_probability = (1 + newuser_adh_level) / 2
+            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
         return 0
 
     # Verhältnis der Klassen berechnen
@@ -150,11 +156,7 @@ def svm_classification(df_similarusers, df_newuser, day_y, k_fold):
 
     # Vorhersagen für den neuen Datensatz machen
     predictions = svm_model.predict(df_newuser_filtered)
-    adherence_probability = sum(predictions) / len(predictions)
-    if adherence_probability < (1 - newuser_adh_level):
-        adherence_probability = 1 - newuser_adh_level
-    else:
-        adherence_probability = adherence_probability * newuser_adh_level
+    adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_level) / 2
 
     print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
 
@@ -177,9 +179,15 @@ def RandomForest_classification(df_similarusers, df_newuser, day_y, k_fold):
 
     # Anzahl der Beispiele für jede Klasse zählen
     class_counts = y.value_counts()
+    unique_values = class_counts.unique()
 
-    if len(class_counts) < 2:
-        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {newuser_adh_level:.3f}")
+    if len(unique_values) == 1:
+        if unique_values[0] == 0:
+            adherence_probability = (0 + newuser_adh_level) / 2
+            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
+        elif unique_values[0] == 1:
+            adherence_probability = (1 + newuser_adh_level) / 2
+            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
         return 0
 
     # Verhältnis der Klassen berechnen
@@ -196,11 +204,7 @@ def RandomForest_classification(df_similarusers, df_newuser, day_y, k_fold):
 
     # Vorhersagen für den neuen Datensatz machen
     predictions = rf_model.predict(df_newuser_filtered)
-    adherence_probability = sum(predictions) / len(predictions)
-    if adherence_probability < (1-newuser_adh_level):
-        adherence_probability = 1 - newuser_adh_level
-    else:
-        adherence_probability = adherence_probability * newuser_adh_level
+    adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_level) / 2
 
     print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
 
