@@ -1,6 +1,7 @@
 from helper import *
 from task1_phases import *
 from task2_groups import *
+from task3_prediction import *
 import pandas as pd
 import numpy as np
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -51,4 +52,59 @@ def show_user_timeline(df_sorted, user_id, step=50):
 def show_cluster_timelines(df_sorted):
     cluster = cluster_timelines(df_sorted)
 
+
+def show_user_statistics(df, user_id, step=50):
+    new_df = df[df['user_id'] == user_id]
+    df_raw = data_preparation(new_df)
+    filtered_df = df_raw.sort_values('day')
+    max_day_value = filtered_df['day'].max()
+
+    id = filtered_df['id']
+    day = filtered_df['day']
+    locale = filtered_df['locale']
+    client = filtered_df['client']
+    collected_at = filtered_df['collected_at']
+    value_loudness = filtered_df['value_loudness']
+    value_cumberness = filtered_df['value_jawbone']
+    value_jawbone = filtered_df['value_jawbone']
+    value_neck = filtered_df['value_neck']
+    value_tin_day = filtered_df['value_tin_day']
+    value_tin_cumber = filtered_df['value_tin_cumber']
+    value_tin_max = filtered_df['value_tin_max']
+    value_movement = filtered_df['value_movement']
+    value_stress = filtered_df['value_stress']
+    value_emotion = filtered_df['value_emotion']
+    value_diary_q11 = filtered_df['value_diary_q11']
+
+    df_dict = {"loudness": value_loudness,
+                "cumberness": value_cumberness,
+                "jawbone": value_jawbone,
+                "neck": value_neck,
+                "tin_day": value_tin_day,
+                "tin_cumber": value_tin_cumber,
+                "tin_max": value_tin_max,
+                "movement": value_movement,
+                "stress": value_stress,
+                "emotion": value_emotion,
+               }
+
+    show_df = pd.DataFrame(df_dict, index=day)
+    show_df.plot()
+    plt.show()
+
+
+def show_user_statistics2(df, user_id, step=10):
+    new_df = df[df['user_id'] == user_id]
+    df_raw = data_preparation(new_df)
+    filtered_df = df_raw.sort_values('day')
+    max_day_value = filtered_df['day'].max()
+
+    selected_columns = ['day', 'value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
+                        'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
+    show_df = filtered_df[selected_columns]
+
+    show_df = show_df.iloc[::step]  # Nur jeden step-ten Wert auswählen
+
+    show_df.plot(x='day')
+    plt.show()
 

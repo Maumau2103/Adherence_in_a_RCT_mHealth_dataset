@@ -65,7 +65,9 @@ def find_similar_users(df_prediction, df_newuser, k):
     newuser_id = df_newuser.iloc[0,1]
     newuser_adh_level = get_user_adh_percentage(df_newuser, newuser_id)
     newuser_length = df_newuser.loc[df_newuser['user_id'] == newuser_id, 'day'].max()
-    print(str(newuser_id) + ': '+ str(newuser_adh_level) + ', ' + str(newuser_length))
+    print('new users id: ' + str(newuser_id))
+    print('new users adherence level: ' + str(newuser_adh_level))
+    print('new users length: ' + str(newuser_length) + ' days')
     print()
 
     # Iteration über die eindeutigen user_ids
