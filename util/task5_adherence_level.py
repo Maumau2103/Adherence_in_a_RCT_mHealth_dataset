@@ -6,9 +6,9 @@ def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, co
     # get timeline array from Task 1
     timeline = get_user_timeline(df_sorted, user_id, start_day, end_day, column)
 
-    # create adherence level variable
+    # create adherence percentage variable
     adh_percentage = float(0)
-    # calculate adherence level for user in timeline
+    # calculate adherence percentage for user in timeline
     for index in timeline:
         adh_percentage += index
 
@@ -16,7 +16,8 @@ def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, co
 
     return adh_percentage
 
-def get_user_adh_level(adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=None, end_day=None) : # adh_level of 1=non-adherent, 2=partial, 3=full
+def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=None, end_day=None) :
+    # adh_level of 1=non-adherent, 2=partial, 3=full
     adherence_group = []
     # check for the adh_level the user chose and put the users that fit that criteria in the adherence_group array
     for user_id in df_sorted['user_id'].unique():
