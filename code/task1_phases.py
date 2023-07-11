@@ -1,6 +1,8 @@
 from helper import *
 import ruptures as rpt
 from setup import *
+import matplotlib.pylab as plt
+
 def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, column=s_table_sort_by):
     # Eingabewerte:
     # column_name ist standardmäßig auf "collected_at" eingestellt
@@ -53,7 +55,7 @@ def get_all_adherence_percentage(timelines):
 
     for timeline in timelines:
         for i in range(timeline_length):
-            if timeline[i] == 1:
+            if i < len(timeline) and timeline[i] == 1:
                 all_adherence_percentages[i] += 1
 
     for i in range(timeline_length):
@@ -64,35 +66,39 @@ def get_all_adherence_percentage(timelines):
 
 def cpd_binseg(all_adherence_percentages):
     # Ruptures liefert mehrere spezifische Anwendungfsfälle, wie z.B. die Erkennung von Mustern.
-    # Da wir hier einen Anwendungfall haben in dem die prozentuale Nutzung der User exponentiell abnimmt, nutzen wir
-    # das Modell "exponential"
 
-    model = "exponential"
-
-    # signal = all_adherence_percentages
+    model = "clinear"
+    n = 84
+    ndim = 1
+    n_bkps = 3
+    sigma = 1  # noise standard deviation
+    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
 
     # Ruptures enthält eine Methode für die Binäre Segmentierung. Wie oben beschrieben geben wir bei dem Parameter
     # "exponentiell" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
     # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
 
-    algo = rpt.Binseg(model=model).fit(all_adherence_percentages)
+    algo = rpt.Binseg(model=model, jump=1).fit(signal)
 
-    my_bkps = algo.predict(n_bkps=3)
-
-    my_bkps = algo.predict(pen=np.log(n) * dim * sigma ** 2)
-    # or
-    # my_bkps = algo.predict(epsilon=3 * n * sigma ** 2)
+    if s_cpd_mode:
+        my_bkps = algo.predict(n_bkps=s_num_change_points)
+    else:
+        my_bkps = algo.predict(pen=s_pen_change_points)
 
     # rpt.show.display(signal, bkps, my_bkps, figsize=(10, 6))
     # plt.show()
-    return my_bkps
+    return bkps
 
 def cpd_botupseg(all_adherence_percentages):
 
     model = "exponential"
 
     algo = rpt.BottomUp(model=model).fit(all_adherence_percentages)
-    my_bkps = algo.predict(n_bkps=3)
+
+    if s_cpd_mode:
+        my_bkps = algo.predict(n_bkps=s_num_change_points)
+    else:
+        my_bkps = algo.predict(pen=s_pen_change_points)
 
     return my_bkps
 
@@ -101,6 +107,10 @@ def cpd_windowseg(all_adherence_percentages):
     model = "exponential"
 
     algo = rpt.Window(width=40, model=model).fit(all_adherence_percentages)
-    my_bkps = algo.predict(n_bkps=3)
+
+    if s_cpd_mode:
+        my_bkps = algo.predict(n_bkps=s_num_change_points)
+    else:
+        my_bkps = algo.predict(pen=s_pen_change_points)
 
     return my_bkps
