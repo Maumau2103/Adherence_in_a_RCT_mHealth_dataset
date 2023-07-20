@@ -219,3 +219,12 @@ def scale_data_euclidian(X):
     X_scaled = pd.DataFrame(scaler.fit_transform(X))
 
     return X_scaled
+
+
+# mithilfe von Task 1 herausfinden in welcher Phase sich der Nutzer befindet
+# mithilfe von Task 5 herausfinden in welcher Phase er wie adherent war
+# Datensatz nach Nutzern filtern, die gleiches Adherence Verhalten aufweisen (k --> Anzahl bestimmen)
+# Einträge der Nutzer labeln nach day_y_adherent
+# RF-Model auf den gelabelten Daten trainieren
+# Accuracy für das Modell berechnen (unbalancierte Daten beachten)
+# Adherence Wahrscheinlichkeit angeben
