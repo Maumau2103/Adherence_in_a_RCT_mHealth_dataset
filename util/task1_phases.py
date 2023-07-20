@@ -75,7 +75,7 @@ def cpd_binseg(all_adherence_percentages):
     signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
 
     # Ruptures enthält eine Methode für die Binäre Segmentierung. Wie oben beschrieben geben wir bei dem Parameter
-    # "exponentiell" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
+    # "clinear" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
     # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
 
     algo = rpt.Binseg(model=model, jump=1).fit(signal)
