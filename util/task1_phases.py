@@ -91,7 +91,7 @@ def cpd_binseg(all_adherence_percentages):
 
 def cpd_botupseg(all_adherence_percentages):
 
-    model = "exponential"
+    model = "clinear"
 
     algo = rpt.BottomUp(model=model).fit(all_adherence_percentages)
 
@@ -104,7 +104,7 @@ def cpd_botupseg(all_adherence_percentages):
 
 def cpd_windowseg(all_adherence_percentages):
 
-    model = "exponential"
+    model = "clinear"
 
     algo = rpt.Window(width=40, model=model).fit(all_adherence_percentages)
 
