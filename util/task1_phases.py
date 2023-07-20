@@ -92,8 +92,13 @@ def cpd_binseg(all_adherence_percentages):
 def cpd_botupseg(all_adherence_percentages):
 
     model = "clinear"
+    n = 84
+    ndim = 1
+    n_bkps = 3
+    sigma = 1  # noise standard deviation
+    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
 
-    algo = rpt.BottomUp(model=model).fit(all_adherence_percentages)
+    algo = rpt.BottomUp(model=model, jump=1).fit(signal)
 
     if s_cpd_mode:
         my_bkps = algo.predict(n_bkps=s_num_change_points)
@@ -105,8 +110,13 @@ def cpd_botupseg(all_adherence_percentages):
 def cpd_windowseg(all_adherence_percentages):
 
     model = "clinear"
+    n = 84
+    ndim = 1
+    n_bkps = 3
+    sigma = 1  # noise standard deviation
+    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
 
-    algo = rpt.Window(width=40, model=model).fit(all_adherence_percentages)
+    algo = rpt.Window(width=40, model=model, jump=1).fit(signal)
 
     if s_cpd_mode:
         my_bkps = algo.predict(n_bkps=s_num_change_points)
