@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 
 from task1_phases import get_user_timeline, get_all_user_timelines
@@ -62,3 +63,36 @@ def cluster_note_timelines(df_sorted, num_clusters=4, column_name='collected_at'
     timeline_notes_cluster_labels = kmeans.labels_
 
     return timeline_notes_cluster_labels
+
+def k_pod(data, k, max_iters=100, tol=1e-6):
+    # Step 1: Initialization
+    num_samples, num_features = data.shape
+    centroids = data[np.random.choice(num_samples, k, replace=False)]
+
+    for iteration in range(max_iters):
+        # Step 2: Cluster Assignment
+        cluster_assignments = np.argmin(cdist(data, centroids, metric='euclidean',
+                                             missing_values='NaN'), axis=1)
+
+        # Step 3: Update Centroids
+        for c in range(k):
+            cluster_samples = data[cluster_assignments == c]
+            if len(cluster_samples) > 0:
+                # Compute the centroid by taking the mean of samples with valid values
+                centroids[c] = np.nanmean(cluster_samples, axis=0)
+
+        # Step 4: Convergence Check
+        if iteration > 0:
+            if np.all(cluster_assignments == prev_cluster_assignments):
+                break
+
+        prev_cluster_assignments = cluster_assignments.copy()
+
+    return cluster_assignments, centroids
+
+
+
+
+
+
+
