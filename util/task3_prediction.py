@@ -81,8 +81,7 @@ def get_newusers_adherence(df_newuser, result_phases):
             last_change_point = result_phases[i]
 
     print('new users phases: ' + str(len(phases)))
-    print(result_phases)
-    print(phases)
+    print('new users adherence percentage: ' + str(phases))
     return phases
 
 
