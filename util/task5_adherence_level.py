@@ -1,4 +1,5 @@
 from task1_phases import *
+from task2_groups import *
 from setup import *
 
 def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, column=s_table_sort_by):
@@ -33,5 +34,14 @@ def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_thre
             adh_percentage = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
             if adh_percentage >= full_adh_threshold:
                 adherence_group.append(adh_percentage)
+
+    return adherence_group
+
+def get_user_adh_level_cluster(df_sorted, adh_level, start_day=None, end_day=None) :
+    cluster_levels = cluster_adherence_levels(df_sorted, 3, start_day, end_day)
+    adherence_group = []
+    for index in cluster_levels:
+        if index == adh_level:
+            adherence_group.append(index)
 
     return adherence_group
