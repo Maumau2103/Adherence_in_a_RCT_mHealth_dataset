@@ -61,7 +61,7 @@ def data_preparation(df):
 
 
 def get_newusers_adherence(df_newuser, result_phases):
-    # user_id und adherence_level vom neuen Nutzer
+    # user_id und length vom neuen Nutzer
     newuser_id = df_newuser.iloc[0, 1]
     newuser_length = df_newuser['day'].max()
     print('new users id: ' + str(newuser_id))
@@ -76,34 +76,17 @@ def get_newusers_adherence(df_newuser, result_phases):
             start_day = start_day[s_table_sort_by].iloc[0]
             end_day = df_newuser[df_newuser['day'] == result_phases[i]]
             end_day = end_day[s_table_sort_by].iloc[0]
-            print(start_day)
-            print(end_day)
             adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day, end_day)
             phases.append(adh_percentage)
             last_change_point = result_phases[i]
 
+    print('new users phases: ' + str(len(phases)))
     print(result_phases)
     print(phases)
+    return phases
 
 
 def find_similar_users(df_prediction, df_newuser, result_phases, k):
-    # user_id und adherence_level vom neuen Nutzer
-    newuser_id = df_newuser.iloc[0, 1]
-    newuser_length = df_newuser['day'].max()
-    print('new users id: ' + str(newuser_id))
-    print('new users length: ' + str(newuser_length) + ' days')
-    print()
-
-    # adherence percentage für alle Phasen herausfinden
-    phase_counter = 0
-    last_change_point = 1
-    phases = []
-    for i in range(len(result_phases)):
-        if (newuser_length > last_change_point):
-            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, i)
-            phases.append(adh_percentage)
-            last_change_point = i
-
     # Initialisierung eines leeren DataFrames
     df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
 
