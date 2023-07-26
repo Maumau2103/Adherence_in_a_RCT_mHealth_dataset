@@ -62,15 +62,12 @@ def show_user_statistics(df_sorted, user_id):
         print('user not found')
         return 0  # Wenn der Nutzer nicht im DataFrame gefunden wurde, gib 0 zurück
 
-    # Sortiere den DataFrame nach der Spalte "day"
-    user_data_sorted = user_data.sort_values(by='day').reset_index(drop=True)
-
     # Finde den längsten aufeinanderfolgenden Streak von "day"
     current_streak = 1
     max_streak = 1
 
-    for i in range(1, len(user_data_sorted)):
-        if user_data_sorted.iloc[i]['day'] <= user_data_sorted.iloc[i-1]['day'] + 1:
+    for i in range(1, len(user_data)):
+        if user_data.iloc[i]['day'] <= user_data.iloc[i-1]['day'] + 1:
             current_streak += 1
         else:
             current_streak = 1
@@ -80,8 +77,8 @@ def show_user_statistics(df_sorted, user_id):
     # Ermittle die Anzahl der Lücken in der Spalte "day"
     anzahl_luecken = 0
 
-    for i in range(1, len(user_data_sorted)):
-        diff = user_data_sorted.iloc[i]['day'] - user_data_sorted.iloc[i-1]['day']
+    for i in range(1, len(user_data)):
+        diff = user_data.iloc[i]['day'] - user_data.iloc[i-1]['day']
         if diff > 1:
             anzahl_luecken += 1
 
