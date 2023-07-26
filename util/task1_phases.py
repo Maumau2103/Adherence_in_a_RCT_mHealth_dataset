@@ -94,73 +94,35 @@ def get_all_adherence_percentage(timelines):
 
     return all_adherence_percentages
 
-
 def cpd_binseg(all_adherence_percentages):
-    # Ruptures liefert mehrere spezifische Anwendungfsfälle, wie z.B. die Erkennung von Mustern.
-
-    model = "clinear"
-    n = 84
-    ndim = 1
-    n_bkps = 3
-    sigma = 1  # noise standard deviation
-    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
-
-    # Ruptures enthält eine Methode für die Binäre Segmentierung. Wie oben beschrieben geben wir bei dem Parameter
-    # "clinear" ein. Die Methode fit() wird genutzt um verschiedene Modellparameter nutzen zu können. Viel mehr
-    # Wissen über diese Methode ist an dieser Stelle nicht nötig um den Code zu verstehen.
-
-    algo = rpt.Binseg(model=model, jump=1).fit(signal)
+    percentages = np.array(all_adherence_percentages).flatten()
+    algo = rpt.Binseg(model="l1", jump=1)
 
     if s_cpd_mode:
-        my_bkps = algo.predict(n_bkps=s_num_change_points)
+        result = algo.fit_predict(percentages, n_bkps=s_num_change_points)
     else:
-        my_bkps = algo.predict(pen=s_pen_change_points)
+        result = algo.fit_predict(percentages, pen=s_pen_change_points)
 
-    # rpt.show.display(signal, bkps, my_bkps, figsize=(10, 6))
-    # plt.show()
-    return bkps
+    return result
 
-def cpd_binseg2(all_adherence_percentages):
-    percentages = np.array(all_adherence_percentages)
-    time_points = np.arange(1, len(percentages) + 1)
-    data = np.column_stack((time_points, percentages))
-    algo = rpt.Binseg(model="linear")
-    result = algo.fit_predict(data[:, 1], pen=5)
-    change_points_indices = np.where(result == 1)[0]
-    change_points = time_points[change_points_indices]
-    return change_points
 def cpd_botupseg(all_adherence_percentages):
-
-    model = "clinear"
-    n = 84
-    ndim = 1
-    n_bkps = 3
-    sigma = 1  # noise standard deviation
-    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
-
-    algo = rpt.BottomUp(model=model, jump=1).fit(signal)
+    percentages = np.array(all_adherence_percentages).flatten()
+    algo = rpt.BottomUp(model="l1", jump=1)
 
     if s_cpd_mode:
-        my_bkps = algo.predict(n_bkps=s_num_change_points)
+        result = algo.fit_predict(percentages, n_bkps=s_num_change_points)
     else:
-        my_bkps = algo.predict(pen=s_pen_change_points)
+        result = algo.fit_predict(percentages, pen=s_pen_change_points)
 
-    return my_bkps
+    return result
 
 def cpd_windowseg(all_adherence_percentages):
-
-    model = "clinear"
-    n = 84
-    ndim = 1
-    n_bkps = 3
-    sigma = 1  # noise standard deviation
-    signal, bkps = rpt.pw_constant(n, ndim, n_bkps, noise_std=sigma)
-
-    algo = rpt.Window(width=40, model=model, jump=1).fit(signal)
+    percentages = np.array(all_adherence_percentages).flatten()
+    algo = rpt.Window(width=40, model="l1", jump=1)
 
     if s_cpd_mode:
-        my_bkps = algo.predict(n_bkps=s_num_change_points)
+        result = algo.fit_predict(percentages, n_bkps=s_num_change_points)
     else:
-        my_bkps = algo.predict(pen=s_pen_change_points)
+        result = algo.fit_predict(percentages, pen=s_pen_change_points)
 
-    return my_bkps
+    return result
