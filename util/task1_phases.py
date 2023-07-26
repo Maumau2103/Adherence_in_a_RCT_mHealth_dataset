@@ -1,7 +1,7 @@
 from helper import *
+import numpy as np
 import ruptures as rpt
 from setup import *
-import matplotlib.pylab as plt
 
 def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, column=s_table_sort_by):
     # Eingabewerte:
@@ -95,6 +95,15 @@ def cpd_binseg(all_adherence_percentages):
     # plt.show()
     return bkps
 
+def cpd_binseg2(all_adherence_percentages):
+    percentages = np.array(all_adherence_percentages)
+    time_points = np.arange(1, len(percentages) + 1)
+    data = np.column_stack((time_points, percentages))
+    algo = rpt.Binseg(model="linear")
+    result = algo.fit_predict(data[:, 1], pen=5)
+    change_points_indices = np.where(result == 1)[0]
+    change_points = time_points[change_points_indices]
+    return change_points
 def cpd_botupseg(all_adherence_percentages):
 
     model = "clinear"
