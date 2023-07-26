@@ -21,6 +21,8 @@ def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, colum
         start_day = min(user_df[column])
     if end_day is None:
         end_day = max(user_df[column])
+    print(start_day)
+    print(end_day)
     all_days = pd.date_range(start=start_day, end=end_day, freq='D').date.tolist()
 
     # Schritt 4: Erstellen eines binären Arrays für die User Timeline

@@ -54,6 +54,9 @@ def data_preparation(df):
     # Hinzufügen des day-Attributes
     df = add_day_attribute(df)
 
+    # Gruppieren nach s_table_key und Sortieren nach s_table_sort_by
+    df = group_and_sort(df)
+
     return df
 
 
@@ -63,16 +66,19 @@ def get_newusers_adherence(df_newuser, result_phases):
     newuser_length = df_newuser['day'].max()
     print('new users id: ' + str(newuser_id))
     print('new users length: ' + str(newuser_length) + ' days')
-    print()
 
     # adherence percentage für alle Phasen herausfinden
     last_change_point = 1
     phases = []
     for i in range(len(result_phases)):
         if (newuser_length > last_change_point):
-            print(last_change_point)
-            print(result_phases[i])
-            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, result_phases[i])
+            start_day = df_newuser[df_newuser['day'] == last_change_point]
+            start_day = start_day[s_table_sort_by].iloc[0]
+            end_day = df_newuser[df_newuser['day'] == result_phases[i]]
+            end_day = end_day[s_table_sort_by].iloc[0]
+            print(start_day)
+            print(end_day)
+            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day, end_day)
             phases.append(adh_percentage)
             last_change_point = result_phases[i]
 
