@@ -11,7 +11,7 @@ from imblearn.under_sampling import RandomUnderSampler
 import matplotlib.pyplot as plt
 
 
-def task3_prediction(df, new_user, day_y, nearest_neighbors=10, cv=10, model=0):
+def task3_prediction(df, new_user, day_y, result_phases, nearest_neighbors=10, cv=10, model=0):
     df_prediction = data_preparation(df)
     df_newuser = data_preparation(new_user)
 
@@ -20,7 +20,7 @@ def task3_prediction(df, new_user, day_y, nearest_neighbors=10, cv=10, model=0):
 
     if model == 0:
         # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit RandomForest
-        predictions_rf = RandomForest_classification(df_similarusers, df_newuser, day_y, cv)
+        predictions_rf = rf_classification(df_similarusers, df_newuser, day_y, cv)
     else:
         # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
         predictions_svm = svm_classification(df_similarusers, df_newuser, day_y, cv)
@@ -57,18 +57,49 @@ def data_preparation(df):
     return df
 
 
-def find_similar_users(df_prediction, df_newuser, k):
-    # Initialisierung eines leeren DataFrames
-    df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
-
+def get_newusers_adherence(df_newuser, result_phases):
     # user_id und adherence_level vom neuen Nutzer
-    newuser_id = df_newuser.iloc[0,1]
-    newuser_adh_level = get_user_adh_percentage(df_newuser, newuser_id)
-    newuser_length = df_newuser.loc[df_newuser['user_id'] == newuser_id, 'day'].max()
+    newuser_id = df_newuser.iloc[0, 1]
+    newuser_length = df_newuser['day'].max()
     print('new users id: ' + str(newuser_id))
-    print('new users adherence level: ' + str(newuser_adh_level))
     print('new users length: ' + str(newuser_length) + ' days')
     print()
+
+    # adherence percentage für alle Phasen herausfinden
+    last_change_point = 1
+    phases = []
+    for i in range(len(result_phases)):
+        if (newuser_length > last_change_point):
+            print(last_change_point)
+            print(result_phases[i])
+            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, result_phases[i])
+            phases.append(adh_percentage)
+            last_change_point = result_phases[i]
+
+    print(result_phases)
+    print(phases)
+
+
+def find_similar_users(df_prediction, df_newuser, result_phases, k):
+    # user_id und adherence_level vom neuen Nutzer
+    newuser_id = df_newuser.iloc[0, 1]
+    newuser_length = df_newuser['day'].max()
+    print('new users id: ' + str(newuser_id))
+    print('new users length: ' + str(newuser_length) + ' days')
+    print()
+
+    # adherence percentage für alle Phasen herausfinden
+    phase_counter = 0
+    last_change_point = 1
+    phases = []
+    for i in range(len(result_phases)):
+        if (newuser_length > last_change_point):
+            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, i)
+            phases.append(adh_percentage)
+            last_change_point = i
+
+    # Initialisierung eines leeren DataFrames
+    df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
 
     # Iteration über die eindeutigen user_ids
     for user_id in df_prediction['user_id'].unique():
@@ -165,7 +196,7 @@ def svm_classification(df_similarusers, df_newuser, day_y, k_fold):
     return predictions
 
 
-def RandomForest_classification(df_similarusers, df_newuser, day_y, k_fold):
+def rf_classification(df_similarusers, df_newuser, day_y, k_fold):
     # Hinzufügen des day_y_adherent Attributs (Label)
     df_similarusers = add_day_y_adherent(df_similarusers, day_y)
     newuser_adh_level = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])

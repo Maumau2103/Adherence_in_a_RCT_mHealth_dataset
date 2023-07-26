@@ -36,16 +36,20 @@ df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_fi
 # neuen Nutzer aus dem Datensatz herausfiltern
 df_prediction_filtered = df_prediction[df_prediction['user_id'] != new_user_id]
 
+result_phases = [20, 41, 63, 84]
+
+get_newusers_adherence(df_newuser, result_phases)
+
 # Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
-df_similarusers = find_similar_users(df_prediction_filtered, df_newuser_filtered, knn)
+#df_similarusers = find_similar_users(df_prediction_filtered, df_newuser_filtered, knn)
 
 # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
-predictions_svm = svm_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
-print(predictions_svm)
+#predictions_svm = svm_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
+#print(predictions_svm)
 
 # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit RandomForest
-predictions_rf = RandomForest_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
-print(predictions_rf)
+#predictions_rf = rf_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
+#print(predictions_rf)
 
 
 # alle Werte müssen numerisch sein, damit der SVM-Klassifikator funktioniert

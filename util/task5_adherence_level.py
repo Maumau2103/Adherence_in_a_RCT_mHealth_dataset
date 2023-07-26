@@ -5,6 +5,7 @@ def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, co
 
     # get timeline array from Task 1
     timeline = get_user_timeline(df_sorted, user_id, start_day, end_day, column)
+    print(timeline)
 
     # create adherence percentage variable
     adh_percentage = float(0)
