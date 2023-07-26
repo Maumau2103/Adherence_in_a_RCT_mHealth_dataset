@@ -1,7 +1,9 @@
 from helper import *
+from setup import *
 from task1_phases import *
 from task2_groups import *
 from task3_prediction import *
+from task5_adherence_level import *
 import pandas as pd
 import numpy as np
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -49,11 +51,62 @@ def show_user_timeline(df_sorted, user_id, step=50):
     plt.show()
 
 
+def show_user_statistics(df_sorted, user_id):
+    # Filtere den Datensatz für den gegebenen Nutzer
+    user_data = df_sorted[df_sorted[s_table_key] == user_id]
+
+    # users timeline
+    timeline = get_user_timeline(user_data, user_id)
+
+    if user_data.empty:
+        print('user not found')
+        return 0  # Wenn der Nutzer nicht im DataFrame gefunden wurde, gib 0 zurück
+
+    # Sortiere den DataFrame nach der Spalte "day"
+    user_data_sorted = user_data.sort_values(by='day').reset_index(drop=True)
+
+    # Finde den längsten aufeinanderfolgenden Streak von "day"
+    current_streak = 1
+    max_streak = 1
+
+    for i in range(1, len(user_data_sorted)):
+        if user_data_sorted.iloc[i]['day'] <= user_data_sorted.iloc[i-1]['day'] + 1:
+            current_streak += 1
+        else:
+            current_streak = 1
+
+        max_streak = max(max_streak, current_streak)
+
+    # Ermittle die Anzahl der Lücken in der Spalte "day"
+    anzahl_luecken = 0
+
+    for i in range(1, len(user_data_sorted)):
+        diff = user_data_sorted.iloc[i]['day'] - user_data_sorted.iloc[i-1]['day']
+        if diff > 1:
+            anzahl_luecken += 1
+
+    # Berechne statistische Daten für den Nutzer
+    user_statistics = {
+        'user_id': user_id,
+        'Anzahl_Tage': len(timeline),
+        'Anzahl_Einträge': timeline.count(1),
+        'Anzahl_fehlende_Einträge': timeline.count(0),
+        'längster_adh_Streak': max_streak,
+        'adh_percentage': get_user_adh_percentage(user_data, user_id),
+        'Anzahl_Lücken': anzahl_luecken
+    }
+
+    # Erstelle ein DataFrame mit den statistischen Daten des Nutzers
+    result_df = pd.DataFrame([user_statistics])
+
+    return result_df
+
+
 def show_cluster_timelines(df_sorted):
     cluster = cluster_timelines(df_sorted)
 
 
-def show_user_statistics(df, user_id, step=50):
+def show_user_statistics_2(df, user_id, step=50):
     new_df = df[df['user_id'] == user_id]
     df_raw = data_preparation(new_df)
     filtered_df = df_raw.sort_values('day')
@@ -93,7 +146,7 @@ def show_user_statistics(df, user_id, step=50):
     plt.show()
 
 
-def show_user_statistics2(df, user_id, step=10):
+def show_user_statistics3(df, user_id, step=10):
     new_df = df[df['user_id'] == user_id]
     df_raw = data_preparation(new_df)
     filtered_df = df_raw.sort_values('day')
