@@ -2,38 +2,39 @@ from task1_phases import *
 from task2_groups import *
 from setup import *
 
-def get_user_adh_percentage(df_sorted, user_id, start_day=None, end_day=None, column=s_table_sort_by_alt):
+def get_user_adh_percentage(df_sorted, user_id, start_day=s_start_day, end_day=s_end_day):
 
     # get timeline array from Task 1
-    timeline = get_user_timeline_2(df_sorted, user_id, start_day, end_day, column)
+    timeline = get_user_timeline(df_sorted, user_id, start_day, end_day)
 
-    # create adherence percentage variable
-    adh_percentage = float(0)
-    # calculate adherence percentage for user in timeline
-    for index in timeline:
-        adh_percentage += index
-
-    adh_percentage = adh_percentage / len(timeline) # percentage
+    adh_sum = sum(timeline)
+    adh_percentage = adh_sum / len(timeline)
 
     return adh_percentage
 
-def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=None, end_day=None) :
+def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=s_start_day, end_day=s_end_day) :
     # adh_level of 1=non-adherent, 2=partial, 3=full
     adherence_group = []
+    user_ids = get_user_ids(df_sorted)
     # check for the adh_level the user chose and put the users that fit that criteria in the adherence_group array
-    for user_id in df_sorted['user_id'].unique():
-        if adh_level == 1:
-            adh_percentage = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
+
+    if adh_level == 1:
+        for i in range(len(user_ids)):
+            adh_percentage = get_user_adh_percentage(df_sorted, user_ids[i], start_day, end_day)
             if adh_percentage < non_adh_threshold:
-                adherence_group.append(adh_percentage)
-        elif adh_level == 2:
-            adh_percentage = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
+                adherence_group.append(user_ids[i])
+
+    elif adh_level == 2:
+        for i in range(len(user_ids)):
+            adh_percentage = get_user_adh_percentage(df_sorted, user_ids[i], start_day, end_day)
             if adh_percentage >= non_adh_threshold and adh_percentage < full_adh_threshold:
-                adherence_group.append(adh_percentage)
-        else:
-            adh_percentage = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
+                adherence_group.append(user_ids[i])
+
+    else:
+        for i in range(len(user_ids)):
+            adh_percentage = get_user_adh_percentage(df_sorted, user_ids[i], start_day, end_day)
             if adh_percentage >= full_adh_threshold:
-                adherence_group.append(adh_percentage)
+                adherence_group.append(user_ids[i])
 
     return adherence_group
 

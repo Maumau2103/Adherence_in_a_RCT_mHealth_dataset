@@ -2,8 +2,8 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 
-from task1_phases import get_user_timeline, get_all_user_timelines
-from task5_adherence_level import get_user_adh_percentage
+from task1_phases import *
+from task5_adherence_level import *
 
 
 def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):

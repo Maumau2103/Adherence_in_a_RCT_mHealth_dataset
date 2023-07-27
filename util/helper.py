@@ -15,7 +15,7 @@ def group_and_sort(df):
     return df_sorted
 
 
-def get_user_ids(grouped_data):
+def get_user_ids(grouped_data: object) -> object:
     # Die Methode gibt alle User IDs in einem sortierten Array aus.
     user_ids = grouped_data[s_table_key].unique()
     return user_ids
