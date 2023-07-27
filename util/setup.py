@@ -10,6 +10,6 @@ s_end_day = 84
 # 
 s_cpd_mode = True
 s_num_change_points = 3
-s_pen_change_points = 5
+s_pen_change_points = 1
 
 # parameter phases:

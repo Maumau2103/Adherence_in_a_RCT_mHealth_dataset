@@ -14,6 +14,8 @@ all_adherence_percentages = get_all_adherence_percentage(all_timelines)
 print(len(get_user_ids(df_sorted)))
 print(all_adherence_percentages)
 print(cpd_binseg(all_adherence_percentages))
+print(cpd_botupseg(all_adherence_percentages))
+print(cpd_windowseg(all_adherence_percentages))
 
 plt.plot(all_adherence_percentages)
 plt.show()
