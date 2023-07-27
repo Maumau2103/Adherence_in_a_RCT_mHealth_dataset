@@ -38,7 +38,14 @@ df_prediction_filtered = df_prediction[df_prediction['user_id'] != new_user_id]
 
 result_phases = [20, 41, 63, 84]
 
-get_newusers_adherence(df_newuser, result_phases)
+newusers_adherence = get_newusers_adherence(df_newuser, result_phases)
+allusers_adherence = get_allusers_adherence(df_prediction, result_phases)
+
+print(newusers_adherence)
+print(allusers_adherence.iloc[50][1])
+print(euclidean_distance(newusers_adherence, allusers_adherence.iloc[0][1]))
+
+#df_similarusers = find_similar_users(df_prediction, newusers_adherence, allusers_adherence, 10)
 
 # Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
 #df_similarusers = find_similar_users(df_prediction_filtered, df_newuser_filtered, knn)

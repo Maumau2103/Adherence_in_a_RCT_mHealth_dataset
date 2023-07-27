@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from numpy.linalg import norm
+import math
 from sklearn.neighbors import NearestNeighbors
 from sklearn.ensemble import RandomForestClassifier
 from task5_adherence_level import *
@@ -36,22 +38,80 @@ def get_newusers_adherence(df_newuser, result_phases):
     # adherence percentage für alle Phasen herausfinden
     last_change_point = 1
     phases = []
-    for i in range(len(result_phases)):
+    for change_point in result_phases:
         if (newuser_length > last_change_point):
-            start_day = df_newuser[df_newuser['day'] == last_change_point]
-            start_day = start_day[s_table_sort_by].iloc[0]
-            end_day = df_newuser[df_newuser['day'] == result_phases[i]]
-            end_day = end_day[s_table_sort_by].iloc[0]
-            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day, end_day)
-            phases.append(adh_percentage)
-            last_change_point = result_phases[i]
+            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, change_point, column=s_table_sort_by_alt)
+            phases.append(round(adh_percentage, 3))
+            last_change_point = change_point
+    if (newuser_length > last_change_point):
+        adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point, column=s_table_sort_by_alt)
+        phases.append(round(adh_percentage, 3))
 
     print('new users phases: ' + str(len(phases)))
     print('new users adherence percentage: ' + str(phases))
     return phases
 
 
-def find_similar_users(df_prediction, df_newuser, result_phases, k):
+def get_allusers_adherence(df_sorted, result_phases):
+    # adherence percentage für alle Nutzer in allen Phasen herausfinden
+    user_phases = pd.DataFrame(columns=["user_id", "phases"])
+    for user_id in df_sorted['user_id'].unique().tolist():
+        df_user = df_sorted[df_sorted['user_id'] == user_id].copy()
+        phases = []
+        last_change_point = 1
+        user_length = df_user['day'].max()
+        for change_point in result_phases:
+            if (user_length > last_change_point):
+                adh_percentage = get_user_adh_percentage(df_user, user_id, last_change_point, change_point, column=s_table_sort_by_alt)
+                phases.append(round(adh_percentage, 3))
+            else:
+                phases.append(0)
+            last_change_point = change_point
+        if (user_length > last_change_point):
+            adh_percentage = get_user_adh_percentage(df_user, user_id, start_day=last_change_point, column=s_table_sort_by_alt)
+            phases.append(round(adh_percentage, 3))
+        else:
+            phases.append(0)
+
+        new_row = {"user_id": user_id, "phases": phases}
+        user_phases = user_phases.append(new_row, ignore_index=True)
+
+    return user_phases
+
+
+def find_similar_users(df_sorted, new_users_adherence, all_users_adherence, k):
+    # Extrahieren der Merkmale für das k-NN-Modell
+    features = all_users_adherence[['phases']]
+
+    # Initialisierung des k-NN-Modells
+    model = NearestNeighbors(n_neighbors=k)
+    model.fit(features)
+
+    # Vorhersage der k ähnlichsten Nutzer für den neuen Nutzer
+    new_user_features = [[new_users_adherence]]
+    distances, indices = model.kneighbors(new_user_features)
+
+    # Extrahieren der ähnlichsten Nutzer aus dem ursprünglichen Datensatz
+    similar_users = all_users_adherence.iloc[indices[0]]
+
+    print(f"Die {k} ähnlichsten Nutzer sind:")
+    print(similar_users)
+    print()
+
+    # Herausfiltern von allen similar_users aus df_sorted
+    df_similarusers = df_sorted[df_sorted['user_id'].isin(similar_users['user_id'])]
+
+    return df_similarusers
+
+
+def euclidean_distance(phases1, phases2):
+    a = np.array(phases1)
+    b = np.array(phases2)
+
+    return norm(a - b)
+
+
+def find_similar_users_2(df_prediction, df_newuser, result_phases, k):
     # Initialisierung eines leeren DataFrames
     df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
 

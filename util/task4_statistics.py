@@ -10,15 +10,18 @@ pd.options.mode.chained_assignment = None  # default='warn'
 import matplotlib.pyplot as plt
 
 
-def show_user_timeline(df_sorted, user_id, step=50):
+def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_day=None, step=50):
     # Berechnen der Timeline für einen User
-    timeline = get_user_timeline(df_sorted, user_id)
+    timeline = get_user_timeline_2(df_sorted, user_id, start_day, end_day, s_table_sort_by_alt)
 
     # X-Achse: Indizes der Elemente im Array
     x = np.arange(len(timeline))
 
     # Figure-Objekt erstellen und Größe festlegen
     fig, ax = plt.subplots(figsize=(12, 4))
+
+    # Hintergrundfarbe auf hellgrau setzen
+    ax.set_facecolor('lightgrey')
 
     # Scatter Plot erstellen
     ax.scatter(x, np.zeros_like(timeline), c=timeline, cmap='binary', marker='o')
@@ -32,6 +35,10 @@ def show_user_timeline(df_sorted, user_id, step=50):
     x_start = 0
     x_end = (len(x) - 1) // 10 * 10
 
+    # Vertikale Linie zur Abgrenzung der Phasen anzeigen
+    for change_point in result_phases:
+        ax.axvline(x=change_point, color='black', linestyle='dashed', alpha=0.7)
+
     # x-Achse beschriften
     x_ticks = np.arange(x_start, x_end + 1, step)
     x_labels = x_ticks
@@ -44,8 +51,9 @@ def show_user_timeline(df_sorted, user_id, step=50):
     # Legende hinzufügen
     legend_elements = [
         plt.Line2D([0], [0], marker='o', color='lightgrey', markerfacecolor='k', markersize=10, label='adherent'),
-        plt.Line2D([0], [0], marker='o', color='lightgrey', markerfacecolor='w', markersize=10, label='not adherent')]
-    plt.legend(handles=legend_elements, facecolor='lightgrey')
+        plt.Line2D([0], [0], marker='o', color='lightgrey', markerfacecolor='w', markersize=10, label='not adherent'),
+        plt.Line2D([0], [0], color='black', linestyle='dashed', alpha=0.7, label='Change Point')]
+    plt.legend(handles=legend_elements, facecolor='white')
 
     # Diagramm anzeigen
     plt.show()

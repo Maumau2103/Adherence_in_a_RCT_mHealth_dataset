@@ -52,8 +52,6 @@ def get_user_timeline_2(df_sorted, key_column, start_day=None, end_day=None, col
     if end_day is None:
         end_day = user_df["day"].max()
 
-    print(start_day)
-    print(end_day)
     # Erstellen eines binären Arrays für die User Timeline
     timeline = []
     for day in range(start_day, end_day+1):
