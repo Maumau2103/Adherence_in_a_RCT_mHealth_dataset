@@ -21,6 +21,6 @@ adh_level = 1
 # print(cpd_botupseg(all_adherence_percentages))
 # print(cpd_windowseg(all_adherence_percentages))
 # print(get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=s_start_day, end_day=s_end_day))
-
+print(get_user_adh_level_cluster(df_sorted,adh_level,s_start_day,s_end_day))
 plt.plot(all_adherence_percentages)
 plt.show()

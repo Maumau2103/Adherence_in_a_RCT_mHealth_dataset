@@ -38,11 +38,35 @@ def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_thre
 
     return adherence_group
 
-def get_user_adh_level_cluster(df_sorted, adh_level, start_day=None, end_day=None) :
+def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_day=s_end_day):
     cluster_levels = cluster_adherence_levels(df_sorted, 3, start_day, end_day)
     adherence_group = []
-    for index in cluster_levels:
-        if index == adh_level:
-            adherence_group.append(index)
+    first_three_unique_clusters = []
+    saving_indices = []
+    for i in range(len(cluster_levels)):
+        if len(first_three_unique_clusters) == 3:
+            break
+        if cluster_levels[i] in first_three_unique_clusters:
+            continue
+        first_three_unique_clusters.append(cluster_levels[i])
+        saving_indices.append(i)
+
+    adh_percentages = []
+    for i in saving_indices:
+        adh_percentages.append(get_user_adh_percentage(df_sorted, i, start_day, end_day))
+
+    value_at_0 = first_three_unique_clusters[adh_percentages.index(min(adh_percentages))]
+    value_at_2 = first_three_unique_clusters[adh_percentages.index(max(adh_percentages))]
+    value_at_1 = 0
+    helper_arr = [value_at_0,value_at_2]
+    for x in range(1,4):
+        if x not in helper_arr:
+            value_at_1 = x
+            break
+
+    sorted_clusters = [value_at_0, value_at_1, value_at_2]
+    for j in range(len(cluster_levels)):
+        if cluster_levels[j] == sorted_clusters[adh_level-1]:
+            adherence_group.append(j)
 
     return adherence_group
