@@ -14,6 +14,9 @@ def get_user_adh_percentage(df_sorted, user_id, start_day=s_start_day, end_day=s
 
 def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=s_start_day, end_day=s_end_day) :
     # adh_level of 1=non-adherent, 2=partial, 3=full
+    # convert percentage to decimal
+    full_adh_threshold = full_adh_threshold / 100
+    non_adh_threshold = non_adh_threshold / 100
     adherence_group = []
     user_ids = get_user_ids(df_sorted)
     # check for the adh_level the user chose and put the users that fit that criteria in the adherence_group array
