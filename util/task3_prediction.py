@@ -49,7 +49,7 @@ def get_newusers_adherence(df_newuser, result_phases):
         phases.append(round(adh_percentage, 3))
 
     print('new users phases: ' + str(len(phases)))
-    print('new users adherence percentage: ' + str(phases))
+    print('new users adherence percentages: ' + str(phases))
     return phases
 
 
@@ -154,8 +154,6 @@ def classification_day(df_similarusers, df_newuser, day_y, k_fold, model):
 
     # Verhältnis der Klassen berechnen
     class_ratio = class_counts[0] / class_counts[1]
-
-    classification_model = 0
 
     if model == 0:
         # RandomForest-Modell initialisieren, trainieren und Accuracy mit cross validation testen
