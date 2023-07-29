@@ -45,12 +45,16 @@ def get_newusers_adherence(df_newuser, result_phases):
             last_change_point = change_point
 
     if (newuser_length > last_change_point):
-        adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point)
+        adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point, end_day=None)
         phases.append(round(adh_percentage, 3))
 
     print('new users phases: ' + str(len(phases)))
     print('new users adherence percentage: ' + str(phases))
     return phases
+
+
+def shorten_list(lst, n):
+    return lst[:n]
 
 
 def get_allusers_adherence(df_sorted, result_phases):
@@ -70,7 +74,7 @@ def get_allusers_adherence(df_sorted, result_phases):
             last_change_point = change_point
 
         if (user_length > last_change_point):
-            adh_percentage = get_user_adh_percentage(df_user, user_id, start_day=last_change_point)
+            adh_percentage = get_user_adh_percentage(df_user, user_id, start_day=last_change_point, end_day=None)
             phases.append(round(adh_percentage, 3))
         else:
             phases.append(0)
@@ -81,24 +85,20 @@ def get_allusers_adherence(df_sorted, result_phases):
     return user_phases
 
 
-def find_similar_users(df_sorted, new_users_adherence, all_users_adherence, k):
-    # Extrahieren der Merkmale für das k-NN-Modell
-    features = all_users_adherence[['phases']]
+def find_similar_users(df_sorted, new_users_phases, all_users_phases, k):
+    # Kürzen von allen phases-Einträgen auf die Länge von new_users_adherence
+    df = all_users_phases.copy()
+    df['phases'] = df['phases'].apply(lambda x: shorten_list(x, len(new_users_phases)))
 
-    # Initialisierung des k-NN-Modells
-    model = NearestNeighbors(n_neighbors=k)
-    model.fit(features)
+    # Berechne die Ähnlichkeiten zwischen der gegebenen Liste und den Listen im DataFrame
+    df["similarity"] = df["phases"].apply(lambda x: euclidean_distance(x, new_users_phases))
 
-    # Vorhersage der k ähnlichsten Nutzer für den neuen Nutzer
-    new_user_features = [[new_users_adherence]]
-    distances, indices = model.kneighbors(new_user_features)
-
-    # Extrahieren der ähnlichsten Nutzer aus dem ursprünglichen Datensatz
-    similar_users = all_users_adherence.iloc[indices[0]]
+    # Wähle die k ähnlichsten Listen im DataFrame aus
+    similar_users = df.nsmallest(k, "similarity")
 
     print(f"Die {k} ähnlichsten Nutzer sind:")
-    print(similar_users)
     print()
+    print(similar_users)
 
     # Herausfiltern von allen similar_users aus df_sorted
     df_similarusers = df_sorted[df_sorted['user_id'].isin(similar_users['user_id'])]
@@ -108,42 +108,6 @@ def find_similar_users(df_sorted, new_users_adherence, all_users_adherence, k):
 
 def euclidean_distance(phases1, phases2):
     return round(math.dist(phases1, phases2), 3)
-
-
-def find_similar_users_2(df_prediction, df_newuser, result_phases, k):
-    # Initialisierung eines leeren DataFrames
-    df_adh_levels = pd.DataFrame(columns=['user_id', 'adherence_level'])
-
-    # Iteration über die eindeutigen user_ids
-    for user_id in df_prediction['user_id'].unique():
-        # Erstellen einer Zeile mit user_id und adherence_level
-        row = {'user_id': user_id, 'adherence_level': get_user_adh_percentage(df_prediction, user_id)}
-
-        # Hinzufügen der Zeile zum Ergebnis-DataFrame
-        df_adh_levels = df_adh_levels.append(row, ignore_index=True)
-
-    # Extrahieren der Merkmale für das k-NN-Modell
-    features = df_adh_levels[['adherence_level']]
-
-    # Initialisierung des k-NN-Modells
-    model = NearestNeighbors(n_neighbors=k)
-    model.fit(features)
-
-    # Vorhersage der k ähnlichsten Nutzer für den neuen Nutzer
-    new_user_features = [[newuser_adh_level]]
-    distances, indices = model.kneighbors(new_user_features)
-
-    # Extrahieren der ähnlichsten Nutzer aus dem ursprünglichen Datensatz
-    similar_users = df_adh_levels.iloc[indices[0]]
-
-    print(f"Die {k} ähnlichsten Nutzer sind:")
-    print(similar_users)
-    print()
-
-    # Herausfiltern von allen similar_users aus df_sorted
-    df_similarusers = df_prediction[df_prediction['user_id'].isin(similar_users['user_id'])]
-
-    return df_similarusers
 
 
 def add_day_y_adherent(df_similarusers, y):
@@ -160,12 +124,12 @@ def add_day_y_adherent(df_similarusers, y):
     return df_similarusers
 
 
-def svm_classification(df_similarusers, df_newuser, day_y, k_fold):
+def classification_day(df_similarusers, df_newuser, day_y, k_fold, model):
     # Hinzufügen des day_y_adherent Attributs
     df_similarusers = add_day_y_adherent(df_similarusers, day_y)
-    newuser_adh_level = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])
+    newuser_adh_percentage = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])
 
-    # Entfernen aller unnötigen Spalten (alle kategorischen Attribute)
+    # Entfernen aller kategorischen Attribute
     columns_to_remove = ['collected_at', 'user_id', 'id', 'client', 'day', 'locale']
     df_similarusers_filtered = df_similarusers.drop(columns=columns_to_remove)
     df_newuser_filtered = df_newuser.drop(columns=columns_to_remove)
@@ -181,35 +145,44 @@ def svm_classification(df_similarusers, df_newuser, day_y, k_fold):
 
     if len(unique_values) == 1:
         if unique_values[0] == 0:
-            adherence_probability = (0 + newuser_adh_level) / 2
+            adherence_probability = (0 + newuser_adh_percentage) / 2
             print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
         elif unique_values[0] == 1:
-            adherence_probability = (1 + newuser_adh_level) / 2
+            adherence_probability = (1 + newuser_adh_percentage) / 2
             print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
         return 0
 
     # Verhältnis der Klassen berechnen
     class_ratio = class_counts[0] / class_counts[1]
 
-    # SVM-Modell initialisieren und Accuracy mit cross validation testen
-    svm_model = SVC(class_weight={0: 1.0, 1: class_ratio})
-    scores = cross_val_score(svm_model, X_scaled, y, cv=k_fold)
-    result = sum(scores) / len(scores)
-    print(f"Durchschnittliche Test Accuracy SVM-Modell: {result:.3f}")
+    classification_model = 0
 
-    # Trainiere den SVM-Klassifikator
-    svm_model.fit(X_scaled, y)
+    if model == 0:
+        # RandomForest-Modell initialisieren, trainieren und Accuracy mit cross validation testen
+        classification_model = RandomForestClassifier(random_state=42, class_weight={0: 1.0, 1: class_ratio})
+        scores = cross_val_score(classification_model, X, y, cv=k_fold)
+        result = sum(scores) / len(scores)
+        print(f"Durchschnittliche Test Accuracy RandomForest-Modell: {result:.3f}")
+        classification_model.fit(X, y)
+    else:
+        # SVM-Modell initialisieren, trainieren und Accuracy mit cross validation testen
+        classification_model = SVC(class_weight={0: 1.0, 1: class_ratio})
+        scores = cross_val_score(classification_model, X_scaled, y, cv=k_fold)
+        result = sum(scores) / len(scores)
+        print(f"Durchschnittliche Test Accuracy SVM-Modell: {result:.3f}")
+        classification_model.fit(X_scaled, y)
 
     # Vorhersagen für den neuen Datensatz machen
-    predictions = svm_model.predict(df_newuser_filtered)
-    adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_level) / 2
+    predictions = classification_model.predict(df_newuser_filtered)
 
-    print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
+    # Wahrscheinlichkeit für adherence berechnen (50% vom Modell beeinflusst, 50% von der durchschnittlichen Adherence)
+    adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_percentage) / 2
+    print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.3f}")
 
     return predictions
 
 
-def rf_classification(df_similarusers, df_newuser, day_y, k_fold):
+def rf_classification_day(df_similarusers, df_newuser, day_y, k_fold):
     # Hinzufügen des day_y_adherent Attributs (Label)
     df_similarusers = add_day_y_adherent(df_similarusers, day_y)
     newuser_adh_level = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])
