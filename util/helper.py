@@ -90,3 +90,10 @@ def data_preparation(df):
 
     return df
 
+
+def delete_test_user(df_sorted, new_user_id):
+    if (new_user_id in get_user_ids(df_sorted)):
+        return df_sorted[df_sorted['user_id'] != new_user_id]
+    else:
+        return df_sorted
+
