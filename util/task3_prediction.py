@@ -40,11 +40,12 @@ def get_newusers_adherence(df_newuser, result_phases):
     phases = []
     for change_point in result_phases:
         if (newuser_length > last_change_point):
-            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, change_point, column=s_table_sort_by_alt)
+            adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, change_point)
             phases.append(round(adh_percentage, 3))
             last_change_point = change_point
+
     if (newuser_length > last_change_point):
-        adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point, column=s_table_sort_by_alt)
+        adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point)
         phases.append(round(adh_percentage, 3))
 
     print('new users phases: ' + str(len(phases)))
@@ -62,13 +63,14 @@ def get_allusers_adherence(df_sorted, result_phases):
         user_length = df_user['day'].max()
         for change_point in result_phases:
             if (user_length > last_change_point):
-                adh_percentage = get_user_adh_percentage(df_user, user_id, last_change_point, change_point, column=s_table_sort_by_alt)
+                adh_percentage = get_user_adh_percentage(df_user, user_id, last_change_point, change_point)
                 phases.append(round(adh_percentage, 3))
             else:
                 phases.append(0)
             last_change_point = change_point
+
         if (user_length > last_change_point):
-            adh_percentage = get_user_adh_percentage(df_user, user_id, start_day=last_change_point, column=s_table_sort_by_alt)
+            adh_percentage = get_user_adh_percentage(df_user, user_id, start_day=last_change_point)
             phases.append(round(adh_percentage, 3))
         else:
             phases.append(0)
@@ -105,10 +107,7 @@ def find_similar_users(df_sorted, new_users_adherence, all_users_adherence, k):
 
 
 def euclidean_distance(phases1, phases2):
-    a = np.array(phases1)
-    b = np.array(phases2)
-
-    return norm(a - b)
+    return round(math.dist(phases1, phases2), 3)
 
 
 def find_similar_users_2(df_prediction, df_newuser, result_phases, k):

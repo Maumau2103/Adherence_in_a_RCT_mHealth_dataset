@@ -42,8 +42,8 @@ newusers_adherence = get_newusers_adherence(df_newuser, result_phases)
 allusers_adherence = get_allusers_adherence(df_prediction, result_phases)
 
 print(newusers_adherence)
-print(allusers_adherence.iloc[50][1])
-print(euclidean_distance(newusers_adherence, allusers_adherence.iloc[0][1]))
+print(allusers_adherence.iloc[2][1])
+print(euclidean_distance(newusers_adherence, allusers_adherence.iloc[2][1]))
 
 #df_similarusers = find_similar_users(df_prediction, newusers_adherence, allusers_adherence, 10)
 
