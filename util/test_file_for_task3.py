@@ -17,7 +17,7 @@ df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
 new_user_id = 2107
-day_y = 20
+day_y = 61
 knn = 10
 k_fold = 10
 df_newuser = df[df['user_id'] == new_user_id].copy()
@@ -38,28 +38,21 @@ df_prediction_filtered = df_prediction[df_prediction['user_id'] != new_user_id]
 
 result_phases = [20, 41, 63, 84]
 
-newusers_adherence = get_newusers_adherence(df_newuser, result_phases)
-allusers_adherence = get_allusers_adherence(df_prediction, result_phases)
+newusers_phases = get_newusers_adherence(df_newuser_filtered, result_phases)
+allusers_phases = get_allusers_adherence(df_prediction_filtered, result_phases)
+print()
 
-print(newusers_adherence)
-print(allusers_adherence.iloc[2][1])
-print(euclidean_distance(newusers_adherence, allusers_adherence.iloc[2][1]))
-
-#df_similarusers = find_similar_users(df_prediction, newusers_adherence, allusers_adherence, 10)
-
-# Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
-#df_similarusers = find_similar_users(df_prediction_filtered, df_newuser_filtered, knn)
+# ähnliche Nutzer finden basierend auf der Adherence
+df_similarusers = find_similar_users(df_prediction_filtered, newusers_phases, allusers_phases, 10)
+print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
-#predictions_svm = svm_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
-#print(predictions_svm)
-
-# Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit RandomForest
-#predictions_rf = rf_classification(df_prediction_filtered, df_newuser_filtered, day_y, k_fold)
-#print(predictions_rf)
+predictions = classification_day(df_similarusers, df_newuser_filtered, day_y, k_fold, 0)
+print(predictions)
 
 
-# alle Werte müssen numerisch sein, damit der SVM-Klassifikator funktioniert
-# Ein SVM-Algorithmus mit allen Daten von similar_users, wobei die user_id rausgenommen wird und vllt. locale und client auch
+### Notizen
+# alle Werte müssen numerisch sein, damit der Klassifikator funktioniert
+# Klassifikator mit allen Daten von similar_users, wobei die kat. Attribute rausgenommen werden (werden nicht gebraucht,
+# weil sie keinen Informationsgewinn bringen)
 # RandomForest funktioniert besser
-# similarusers nicht nur anhand adherence level heraussuchen, sondern auch anhand der Länge (ältester Tag - jüngster Tag)
