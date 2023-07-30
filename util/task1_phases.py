@@ -6,21 +6,21 @@ from datetime import datetime
 
 from datetime import datetime
 
-def get_user_timeline(df_sorted, key_column, start_day=0, end_day=84, column='s_table_sort_by_alt'):
+def get_user_timeline(df_sorted, key_column=s_table_key, start_day=s_start_day, end_day=s_end_day, column=s_table_sort_by):
     # Herausfiltern aller Einträge eines spezifischen Nutzers
-    user_df = df_sorted[df_sorted['s_table_key'] == key_column]
+    user_df = df_sorted[df_sorted[column] == key_column]
 
     # Extrahieren der Tage aus der Spalte "column" und in ein neues Datumsformat umwandeln
-    user_df['day'] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
+    user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
 
     # Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
     start_day = max(1, start_day)  # Sicherstellen, dass start_day nicht kleiner als 1 ist
-    end_day = min(user_df['day'].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
+    end_day = min(user_df[column].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
 
     # Erstellen eines binären Arrays für die User Timeline
     timeline = []
     for day in range(start_day, end_day + 1):
-        if day in user_df['day'].tolist():
+        if day in user_df[column].tolist():
             timeline.append(1)
         else:
             timeline.append(0)

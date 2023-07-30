@@ -6,7 +6,7 @@ s_table_sort_by_alt = "day"
 
 # Phases
 s_start_day = 0
-s_end_day = 84
+s_end_day = 50
 # 
 s_cpd_mode = True
 s_num_change_points = 3
