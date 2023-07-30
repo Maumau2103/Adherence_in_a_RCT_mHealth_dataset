@@ -2,29 +2,30 @@ from helper import *
 import numpy as np
 import ruptures as rpt
 from setup import *
+from datetime import datetime
 
+from datetime import datetime
 
-def get_user_timeline(df_sorted, key_column, start_day=None, end_day=None, column=s_table_sort_by_alt):
+def get_user_timeline(df_sorted, key_column, start_day=0, end_day=84, column='s_table_sort_by_alt'):
     # Herausfiltern aller Einträge eines spezifischen Nutzers
-    user_df = df_sorted[df_sorted[s_table_key] == key_column]
+    user_df = df_sorted[df_sorted['s_table_key'] == key_column]
+
+    # Extrahieren der Tage aus der Spalte "column" und in ein neues Datumsformat umwandeln
+    user_df['day'] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
 
     # Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
-    if start_day is None:
-        start_day = 1
-
-    if end_day is None:
-        end_day = user_df["day"].max()
+    start_day = max(1, start_day)  # Sicherstellen, dass start_day nicht kleiner als 1 ist
+    end_day = min(user_df['day'].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
 
     # Erstellen eines binären Arrays für die User Timeline
     timeline = []
-    for day in range(start_day, end_day+1):
-        if day in user_df[column].tolist():
+    for day in range(start_day, end_day + 1):
+        if day in user_df['day'].tolist():
             timeline.append(1)
         else:
             timeline.append(0)
 
     return timeline
-
 
 def get_all_user_timelines(df_sorted, start_day=None, end_day=None):
     # Diese Methode soll alle User Timelines in einem mehrdimensionalen Array ausgeben.
