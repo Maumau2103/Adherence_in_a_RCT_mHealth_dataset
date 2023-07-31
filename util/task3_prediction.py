@@ -214,6 +214,7 @@ def predict_phase_adherence(df_similarusers, allusers_phases, newuser_phases):
             sum_adh_percentage += similarusers_phases.iloc[j]['phases'][i]
         newuser_future_phases.append(round(sum_adh_percentage/len(similarusers_phases), 3))
 
+    print('new users adherence percentages: ' + str(newuser_phases))
     print('new users adherence percentages in future phases: ' + str(newuser_future_phases))
 
     return newuser_future_phases
