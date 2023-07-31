@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 pd.options.mode.chained_assignment = None  # default='warn'
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_day=None, step=50):
@@ -63,6 +64,37 @@ def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_da
     plt.show()
 
 
+def show_user_adherence_percentage(users_phases, user_id=None):
+    if user_id is None:
+        user_adherence_percentages = users_phases
+    else:
+        user_phases = users_phases[users_phases[s_table_key] == user_id]
+        user_adherence_percentages = user_phases.iloc[0]['phases']
+        print(user_adherence_percentages)
+
+    # Erstelle eine Liste mit Phasen-Indizes
+    phases = list(range(1, len(user_adherence_percentages) + 1))
+
+    # Setze den Stil von Seaborn
+    sns.set(style="white")
+    muted_palette = sns.color_palette("muted")
+
+    # Erstelle das Plot-Diagramm als Balkendiagramm
+    plt.figure(figsize=(7, 5))
+    plt.bar(phases, user_adherence_percentages, color=muted_palette, width=0.7)
+
+    # Beschrifte die Achsen und den Titel des Diagramms
+    plt.xlabel('Phases')
+    plt.ylabel('Adherence percentages')
+    plt.title('Adherence in verschiedenen Phasen')
+
+    # Setze die Beschriftung der x-Achse auf "Phase 1", "Phase 2", usw.
+    plt.xticks(phases, ['Phase ' + str(phase) for phase in phases])
+
+    # Zeige das Diagramm
+    plt.show()
+
+
 def show_user_statistics(df_sorted, user_id):
     # Filtere den Datensatz für den gegebenen Nutzer
     user_data = df_sorted[df_sorted[s_table_key] == user_id]
@@ -79,7 +111,7 @@ def show_user_statistics(df_sorted, user_id):
     max_streak = 1
 
     for i in range(1, len(user_data)):
-        if user_data.iloc[i]['day'] <= user_data.iloc[i-1]['day'] + 1:
+        if user_data.iloc[i][s_table_sort_by_alt] <= user_data.iloc[i-1][s_table_sort_by_alt] + 1:
             current_streak += 1
         else:
             current_streak = 1
@@ -90,7 +122,7 @@ def show_user_statistics(df_sorted, user_id):
     anzahl_luecken = 0
 
     for i in range(1, len(user_data)):
-        diff = user_data.iloc[i]['day'] - user_data.iloc[i-1]['day']
+        diff = user_data.iloc[i][s_table_sort_by_alt] - user_data.iloc[i-1][s_table_sort_by_alt]
         if diff > 1:
             anzahl_luecken += 1
 

@@ -1,5 +1,3 @@
-import datetime
-
 from helper import *
 from task3_prediction import *
 from task1_phases import *
@@ -47,7 +45,6 @@ print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit an Tag y für den neuen Nutzer mit Random Forest
 predictions = predict_day_adherence(df_similarusers, df_newuser_filtered, day_y, k_fold, 0)
-print(predictions)
 print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit in den zukünftigen Phasen für den neuen Nutzer
