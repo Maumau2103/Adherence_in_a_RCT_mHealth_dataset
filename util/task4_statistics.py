@@ -70,7 +70,8 @@ def show_user_adherence_percentage(users_phases, user_id=None):
     else:
         user_phases = users_phases[users_phases[s_table_key] == user_id]
         user_adherence_percentages = user_phases.iloc[0]['phases']
-        print(user_adherence_percentages)
+
+    print(user_adherence_percentages)
 
     # Erstelle eine Liste mit Phasen-Indizes
     phases = list(range(1, len(user_adherence_percentages) + 1))
