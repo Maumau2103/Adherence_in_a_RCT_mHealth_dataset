@@ -72,7 +72,7 @@ def show_user_statistics(df_sorted, user_id):
         return 0  # Wenn der Nutzer nicht im DataFrame gefunden wurde, gib 0 zurück
 
     # users timeline
-    timeline = get_user_timeline(user_data, user_id)
+    timeline = get_user_timeline(user_data, user_id, start_day=None, end_day=None)
 
     # Finde den längsten aufeinanderfolgenden Streak von "day"
     current_streak = 1
