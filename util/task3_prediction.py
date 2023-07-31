@@ -53,10 +53,6 @@ def get_newusers_adherence(df_newuser, result_phases):
     return phases
 
 
-def shorten_list(lst, n):
-    return lst[:n]
-
-
 def get_allusers_adherence(df_sorted, result_phases):
     # adherence percentage für alle Nutzer in allen Phasen herausfinden
     user_phases = pd.DataFrame(columns=["user_id", "phases"])
@@ -83,6 +79,10 @@ def get_allusers_adherence(df_sorted, result_phases):
         user_phases = user_phases.append(new_row, ignore_index=True)
 
     return user_phases
+
+
+def shorten_list(lst, n):
+    return lst[:n]
 
 
 def find_similar_users(df_sorted, new_users_phases, all_users_phases, k):
@@ -124,10 +124,10 @@ def add_day_y_adherent(df_similarusers, y):
     return df_similarusers
 
 
-def classification_day(df_similarusers, df_newuser, day_y, k_fold, model):
+def predict_day_adherence(df_similarusers, df_newuser, day_y, k_fold, model):
     # Hinzufügen des day_y_adherent Attributs
     df_similarusers = add_day_y_adherent(df_similarusers, day_y)
-    newuser_adh_percentage = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])
+    newuser_adh_percentage = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1], start_day=None, end_day=None)
 
     # Entfernen aller kategorischen Attribute
     columns_to_remove = ['collected_at', 'user_id', 'id', 'client', 'day', 'locale']
@@ -141,15 +141,23 @@ def classification_day(df_similarusers, df_newuser, day_y, k_fold, model):
 
     # Anzahl der Beispiele für jede Klasse zählen
     class_counts = y.value_counts()
-    unique_values = class_counts.unique()
+    count_ones = 0
+    count_zeros = 0
 
-    if len(unique_values) == 1:
-        if unique_values[0] == 0:
-            adherence_probability = (0 + newuser_adh_percentage) / 2
-            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-        elif unique_values[0] == 1:
-            adherence_probability = (1 + newuser_adh_percentage) / 2
-            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
+    for element in y:
+        if element == 1:
+            count_ones += 1
+        elif element == 0:
+            count_zeros += 1
+
+    # Ausgeben der Adherence Wahrscheinlichkeit, wenn nur eine Klasse des Labels vorhanden ist
+    if count_zeros == 0:
+        adherence_probability = (1 + newuser_adh_percentage) / 2
+        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
+        return 0
+    elif count_ones == 0:
+        adherence_probability = (0 + newuser_adh_percentage) / 2
+        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
         return 0
 
     # Verhältnis der Klassen berechnen
@@ -180,52 +188,34 @@ def classification_day(df_similarusers, df_newuser, day_y, k_fold, model):
     return predictions
 
 
-def rf_classification_day(df_similarusers, df_newuser, day_y, k_fold):
-    # Hinzufügen des day_y_adherent Attributs (Label)
-    df_similarusers = add_day_y_adherent(df_similarusers, day_y)
-    newuser_adh_level = get_user_adh_percentage(df_newuser, df_newuser.iloc[0,1])
+def shorten_list_2(lst, n):
+    if n >= len(lst):
+        return lst
 
-    # Entfernen aller unnötigen Spalten (alle kategorischen Attribute)
-    columns_to_remove = ['collected_at', 'user_id', 'id', 'client', 'day', 'locale']
-    df_similarusers_filtered = df_similarusers.drop(columns=columns_to_remove)
-    df_newuser_filtered = df_newuser.drop(columns=columns_to_remove)
+    return lst[-n:]
 
-    # Datensatz aufteilen in Features und Label
-    X = df_similarusers_filtered.drop('day_y_adherent', axis=1)
-    y = df_similarusers_filtered['day_y_adherent']
 
-    # Anzahl der Beispiele für jede Klasse zählen
-    class_counts = y.value_counts()
-    unique_values = class_counts.unique()
+def predict_phase_adherence(df_similarusers, allusers_phases, newuser_phases):
+    # Filtere allusers_phases basierend auf den "user_id"-Werten in df_similarusers
+    similarusers_phases = allusers_phases[allusers_phases['user_id'].isin(df_similarusers['user_id'])]
 
-    if len(unique_values) == 1:
-        if unique_values[0] == 0:
-            adherence_probability = (0 + newuser_adh_level) / 2
-            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-        elif unique_values[0] == 1:
-            adherence_probability = (1 + newuser_adh_level) / 2
-            print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-        return 0
+    # Anzahl der Phasen, die für den neuen Nutzer in der Zukunft liegen
+    new_len = len(allusers_phases.iloc[0]['phases']) - len(newuser_phases)
 
-    # Verhältnis der Klassen berechnen
-    class_ratio = class_counts[0] / class_counts[1]
+    # Kürzen von allen phases-Einträgen, sodass nur die Phasen angezeigt werden, die für den neuen Nutzer in der Zukunft liegen
+    similarusers_phases['phases'] = similarusers_phases['phases'].apply(lambda x: shorten_list_2(x, new_len))
 
-    # RandomForest-Modell initialisieren und Accuracy mit cross validation testen
-    rf_model = RandomForestClassifier(random_state=42, class_weight={0: 1.0, 1: class_ratio})
-    scores = cross_val_score(rf_model, X, y, cv=k_fold)
-    result = sum(scores) / len(scores)
-    print(f"Durchschnittliche Test Accuracy RandomForest-Modell: {result:.3f}")
+    newuser_future_phases = []
 
-    # Trainiere den RandomForest-Klassifikator
-    rf_model.fit(X, y)
+    for i in range(new_len):
+        sum_adh_percentage = 0
+        for j in range(len(similarusers_phases)):
+            sum_adh_percentage += similarusers_phases.iloc[j]['phases'][i]
+        newuser_future_phases.append(round(sum_adh_percentage/len(similarusers_phases), 3))
 
-    # Vorhersagen für den neuen Datensatz machen
-    predictions = rf_model.predict(df_newuser_filtered)
-    adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_level) / 2
+    print('new users adherence percentages in future phases: ' + str(newuser_future_phases))
 
-    print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-
-    return predictions
+    return newuser_future_phases
 
 
 def scale_data_euclidian(X):

@@ -45,10 +45,13 @@ print()
 df_similarusers = find_similar_users(df_prediction_filtered, newusers_phases, allusers_phases, 10)
 print()
 
-# Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
-predictions = classification_day(df_similarusers, df_newuser_filtered, day_y, k_fold, 0)
+# Berechnen der Adherence-Wahrscheinlichkeit an Tag y für den neuen Nutzer mit Random Forest
+predictions = predict_day_adherence(df_similarusers, df_newuser_filtered, day_y, k_fold, 0)
 print(predictions)
+print()
 
+# Berechnen der Adherence-Wahrscheinlichkeit in den zukünftigen Phasen für den neuen Nutzer
+newusers_future_phases = predict_phase_adherence(df_similarusers, allusers_phases, newusers_phases)
 
 ### Notizen
 # alle Werte müssen numerisch sein, damit der Klassifikator funktioniert

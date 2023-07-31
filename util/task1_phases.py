@@ -6,15 +6,20 @@ from datetime import datetime
 
 from datetime import datetime
 
-def get_user_timeline(df_sorted, key_column=s_table_key, start_day=s_start_day, end_day=s_end_day, column=s_table_sort_by):
+def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_end_day, column=s_table_sort_by_alt):
     # Herausfiltern aller Einträge eines spezifischen Nutzers
-    user_df = df_sorted[df_sorted[column] == key_column]
+    user_df = df_sorted[df_sorted[s_table_key] == key_column]
 
     # Extrahieren der Tage aus der Spalte "column" und in ein neues Datumsformat umwandeln
-    user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
+    #user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
 
     # Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
-    start_day = max(1, start_day)  # Sicherstellen, dass start_day nicht kleiner als 1 ist
+    if start_day == None:
+        start_day = user_df[column].min()
+    if end_day == None:
+        end_day = user_df[column].max()
+
+    start_day = max(1, start_day) # Sicherstellen, dass start_day nicht kleiner als 1 ist
     end_day = min(user_df[column].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
 
     # Erstellen eines binären Arrays für die User Timeline
