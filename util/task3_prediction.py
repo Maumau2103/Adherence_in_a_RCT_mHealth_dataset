@@ -207,6 +207,7 @@ def predict_phase_adherence(df_similarusers, allusers_phases, newuser_phases):
 
     newuser_future_phases = []
 
+    # Berechnen der durchschnittlichen adherence percentages in den zukünftigen Phasen der ähnlichen Nutzer
     for i in range(new_len):
         sum_adh_percentage = 0
         for j in range(len(similarusers_phases)):

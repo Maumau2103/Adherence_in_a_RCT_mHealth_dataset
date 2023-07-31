@@ -12,7 +12,11 @@ import matplotlib.pyplot as plt
 
 def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_day=None, step=50):
     # Berechnen der Timeline für einen User
-    timeline = get_user_timeline(df_sorted, user_id, start_day, end_day)
+    if user_id in df_sorted[s_table_key].tolist():
+        timeline = get_user_timeline(df_sorted, user_id, start_day, end_day)
+    else:
+        print('user not found')
+        return 0
 
     # X-Achse: Indizes der Elemente im Array
     x = np.arange(len(timeline))
@@ -63,12 +67,12 @@ def show_user_statistics(df_sorted, user_id):
     # Filtere den Datensatz für den gegebenen Nutzer
     user_data = df_sorted[df_sorted[s_table_key] == user_id]
 
-    # users timeline
-    timeline = get_user_timeline(user_data, user_id)
-
     if user_data.empty:
         print('user not found')
         return 0  # Wenn der Nutzer nicht im DataFrame gefunden wurde, gib 0 zurück
+
+    # users timeline
+    timeline = get_user_timeline(user_data, user_id)
 
     # Finde den längsten aufeinanderfolgenden Streak von "day"
     current_streak = 1

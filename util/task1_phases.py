@@ -14,9 +14,10 @@ def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_en
     #user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
 
     # Erstellen einer Liste aller Tage basierend auf den optionalen Parametern
-    if start_day == None:
+    if start_day is None:
         start_day = user_df[column].min()
-    if end_day == None:
+
+    if end_day is None:
         end_day = user_df[column].max()
 
     start_day = max(1, start_day) # Sicherstellen, dass start_day nicht kleiner als 1 ist
@@ -40,7 +41,7 @@ def get_all_user_timelines(df_sorted, start_day=None, end_day=None):
     timelines = []
 
     for i in range(len(user_ids)):
-        timeline = get_user_timeline(df_sorted, user_ids[i], start_day=start_day, end_day=end_day, column=s_table_sort_by)
+        timeline = get_user_timeline(df_sorted, user_ids[i], start_day=start_day, end_day=end_day)
         timelines.append(timeline)
 
     return timelines
