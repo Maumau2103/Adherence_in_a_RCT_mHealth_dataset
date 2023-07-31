@@ -4,12 +4,12 @@ from sklearn.cluster import KMeans
 
 from task1_phases import *
 from task5_adherence_level import *
-#from test_file_task2 import *
+# from test_file_task2 import *
 
 
 def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
     df = data_preparation(df_sorted)
-    # cluster groups of patients using their individual binary timelines
+    # Cluster groups of patients using their individual binary timelines
     timelines = get_all_user_timelines(df_sorted, start_day, end_day)
 
     # Convert the timelines to a NumPy array
@@ -27,7 +27,7 @@ def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', sta
 
 def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
     df = data_preparation(df_sorted)
-    # form clusters of groups of patients using the adherence percentages from task 5
+    # Form clusters of groups of patients using the adherence percentages from task 5
     all_adh_levels = []
 
     # Iterate over each unique user ID
@@ -51,7 +51,7 @@ def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=
 
 def cluster_note_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
     df = data_preparation(df_sorted)
-    # cluster groups of patients using their individual timelines combined with their notes timeline
+    # Cluster groups of patients using their individual timelines combined with their notes timeline
     timelines = get_all_user_timelines(df, start_day, end_day, column_name)
     notes = get_all_user_timelines(df, start_day, end_day, 'value_diary_q11')
 
@@ -72,23 +72,13 @@ def cluster_note_timelines(df_sorted, num_clusters=3, column_name='collected_at'
     return timeline_notes_cluster_labels
 
 
-
-import pandas as pd
-import numpy as np
-from scipy.spatial.distance import cdist
-
-# Die gegebenen Attributnamen
-
-import pandas as pd
-import numpy as np
-from scipy.spatial.distance import cdist
-
-# Die gegebenen Attributnamen
+# Given attribute names
 selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
                        'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
 
+
 def preprocess_data(df_sorted):
-    # Daten für die ausgewählten Attribute extrahieren
+    # Extract data for the selected attributes
     data = df_sorted[selected_attributes].to_numpy()
 
     # Convert data to a floating-point data type
@@ -99,16 +89,18 @@ def preprocess_data(df_sorted):
 
     return data
 
+
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cdist
 
-# Die gegebenen Attributnamen
+# Given attribute names
 selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
                        'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
 
+
 def preprocess_data(df_sorted):
-    # Daten für die ausgewählten Attribute extrahieren
+    # Extract data for the selected attributes
     data = df_sorted[selected_attributes].to_numpy()
 
     # Convert data to a floating-point data type
@@ -118,6 +110,7 @@ def preprocess_data(df_sorted):
     data[np.isnan(data)] = np.inf
 
     return data
+
 
 def k_pod(data, k, max_iters=100, tol=1e-6):
     # Step 1: Initialization
@@ -150,6 +143,7 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
         prev_cluster_assignments = cluster_assignments.copy()
 
     return cluster_assignments, centroids
+
 
 
 
