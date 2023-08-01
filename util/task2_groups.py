@@ -5,53 +5,89 @@ from task1_phases import *
 from task5_adherence_level import *
 
 
-def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
+def cluster_timelines(df_sorted, num_clusters=3, start_day=None, end_day=None):
     # Cluster groups of patients using their individual binary timelines
     timelines = get_all_user_timelines(df_sorted, start_day, end_day)
 
     # Finde die Länge des längsten Arrays
     max_length = max(len(arr) for arr in timelines)
 
-    # Forme die inneren Arrays um, indem du Nullen hinzufügst
+    # Forme die inneren Arrays um, indem Nullen hinzugefügt werden
     timelines_fixed_length = [arr + [0] * (max_length - len(arr)) for arr in timelines]
-
-    # Convert the timelines to a NumPy array
-    timelines_data = np.array(timelines_fixed_length)
 
     # Initialize and train K-Means model
     kmeans = KMeans(n_clusters=num_clusters)
-    kmeans.fit(timelines_data)
+    kmeans.fit(timelines_fixed_length)
 
     # Cluster labels for the timelines
     timeline_cluster_labels = kmeans.labels_
 
-    return timeline_cluster_labels
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+
+    user_ids = get_user_ids(df_sorted)
+    for i in range(len(user_ids)):
+        new_row = {"user_id": user_ids[i], "cluster_label_timeline": timeline_cluster_labels[i]}
+        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
+
+    return allusers_cluster_label
 
 
-def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
-    # Form clusters of groups of patients using the adherence percentages from task 5
-    all_adh_levels = []
-
-    # Iterate over each unique user ID
-    for user_id in df_sorted['user_id'].unique():
-        # Get the adherence level for each user using the existing function
-        adh_level = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
-        all_adh_levels.append(adh_level)
-
-    # Convert the adherence levels to a NumPy array
-    adh_levels_data = np.array(all_adh_levels).reshape(-1, 1)
-
+def cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters=3):
     # Initialize and train K-Means model
     kmeans = KMeans(n_clusters=num_clusters)
-    kmeans.fit(adh_levels_data)
+    kmeans.fit(allusers_phases['phases'].tolist())
 
     # Cluster labels for the adherence levels
     adherence_cluster_labels = kmeans.labels_
 
-    return adherence_cluster_labels
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+
+    user_ids = get_user_ids(df_sorted)
+    for i in range(len(user_ids)):
+        new_row = {"user_id": user_ids[i], "cluster_label_timeline": adherence_cluster_labels[i]}
+        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
+
+    return allusers_cluster_label
 
 
-def cluster_note_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
+def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q11', start_day=None, end_day=None):
+    notes_datas = []
+
+    # Erstelle "notes_timelines" für jeden Nutzer
+    for user_id in get_user_ids(df_sorted):
+        user_df = df_sorted[df_sorted[s_table_key] == user_id]
+        note_data = []
+        for i in range(len(user_df)):
+            if user_df.iloc[i][column_name] == 1:
+                note_data.append(1)
+            else:
+                note_data.append(0)
+        notes_datas.append(note_data)
+
+    # Finde die Länge des längsten Arrays
+    max_length = max(len(arr) for arr in notes_datas)
+
+    # Forme die inneren Arrays um, indem Nullen hinzugefügt werden
+    notes_datas_fixed_length = [arr + [0] * (max_length - len(arr)) for arr in notes_datas]
+
+    # Initialize and train K-Means model
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(notes_datas_fixed_length)
+
+    # Cluster labels for the adherence levels
+    adherence_cluster_labels = kmeans.labels_
+
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+
+    user_ids = get_user_ids(df_sorted)
+    for i in range(len(user_ids)):
+        new_row = {"user_id": user_ids[i], "cluster_label_timeline": adherence_cluster_labels[i]}
+        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
+
+    return allusers_cluster_label
+
+
+def cluster_note_timelines_2(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
     df = data_preparation(df_sorted)
     # Cluster groups of patients using their individual timelines combined with their notes timeline
     timelines = get_all_user_timelines(df, start_day, end_day, column_name)
