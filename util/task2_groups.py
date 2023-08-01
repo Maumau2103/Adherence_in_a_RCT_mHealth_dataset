@@ -72,23 +72,6 @@ def cluster_note_timelines(df_sorted, num_clusters=3, column_name='collected_at'
     return timeline_notes_cluster_labels
 
 
-# Given attribute names
-selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
-                       'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
-
-
-def preprocess_data(df_sorted):
-    # Extract data for the selected attributes
-    data = df_sorted[selected_attributes].to_numpy()
-
-    # Convert data to a floating-point data type
-    data = data.astype(float)
-
-    # Fill NaN values with a large value (e.g., infinity)
-    data[np.isnan(data)] = np.inf
-
-    return data
-
 
 import pandas as pd
 import numpy as np
