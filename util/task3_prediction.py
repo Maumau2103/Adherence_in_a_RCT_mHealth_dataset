@@ -39,7 +39,7 @@ def get_allusers_adherence(df_sorted, result_phases):
         df_user = df_sorted[df_sorted['user_id'] == user_id].copy()
         phases = []
         last_change_point = 1
-        user_length = df_user['day'].max()
+        user_length = df_user[s_table_sort_by_alt].max()
         for change_point in result_phases:
             if (user_length > last_change_point):
                 adh_percentage = get_user_adh_percentage(df_user, user_id, last_change_point, change_point)
