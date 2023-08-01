@@ -23,21 +23,57 @@ def get_user_ids(df):
 
 def add_day_attribute(df_sorted):
     # Konvertieren von 'collected_at' in das Datumsformat
+    #df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
+
+    # Initialisieren des Tagesattributs
+    #df_sorted['day'] = 0
+
+    # Iteration über die Daten
+    #for user_id, group in df_sorted.groupby(s_table_key):
+        # Bestimmung des ältesten Datums pro user_id
+       # min_date = group[s_table_sort_by].min()
+
+        # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
+      #  df_sorted.loc[df_sorted[s_table_key] == user_id, 'day'] = (df_sorted.loc[df_sorted[s_table_key] == user_id, s_table_sort_by].dt.date - min_date.date()).dt.days + 1
+
+        # Konvertieren in Ganzzahl
+     #   df_sorted['day'] = df_sorted['day'].astype(int)
+
+    #return df_sorted
+################
+# Konvertieren von 'collected_at' in das Datumsformat
     df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
+
+    # Print data types and values for debugging
+    #print("Data types:")
+    #print(df_sorted.dtypes)
+    #print("collected_at values:")
+    #print(df_sorted[s_table_sort_by])
 
     # Initialisieren des Tagesattributs
     df_sorted['day'] = 0
 
-    # Iteration über die Daten
-    for user_id, group in df_sorted.groupby(s_table_key):
-        # Bestimmung des ältesten Datums pro user_id
-        min_date = group[s_table_sort_by].min()
+    # Bestimmung des ältesten Datums pro user_id
+    min_dates = df_sorted.groupby(s_table_key)[s_table_sort_by].transform('min')
 
-        # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-        df_sorted.loc[df_sorted[s_table_key] == user_id, 'day'] = (df_sorted.loc[df_sorted[s_table_key] == user_id, s_table_sort_by].dt.date - min_date.date()).dt.days + 1
+    #print("Unique user_id values:")
+    #print(df_sorted[s_table_key].unique())
 
-        # Konvertieren in Ganzzahl
-        df_sorted['day'] = df_sorted['day'].astype(int)
+    #print("Corresponding minimum dates:")
+    #print(min_dates.unique())
+
+    # Print data types of 'collected_at' and 'min_dates'
+    #print("Data type of 'collected_at':")
+    #print(df_sorted[s_table_sort_by].dtype)
+
+    #print("Data type of 'min_dates':")
+    #print(min_dates.dtype)
+
+    # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
+    df_sorted['day'] = (df_sorted[s_table_sort_by].dt.date - min_dates.dt.date).dt.days + 1
+
+    # Konvertieren in Ganzzahl
+    df_sorted['day'] = df_sorted['day'].astype(int)
 
     return df_sorted
 

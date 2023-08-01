@@ -4,11 +4,9 @@ from sklearn.cluster import KMeans
 
 from task1_phases import *
 from task5_adherence_level import *
-# from test_file_task2 import *
 
 
 def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', start_day=None, end_day=None):
-    df = data_preparation(df_sorted)
     # Cluster groups of patients using their individual binary timelines
     timelines = get_all_user_timelines(df_sorted, start_day, end_day)
 
