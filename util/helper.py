@@ -23,26 +23,27 @@ def get_user_ids(df):
 
 def add_day_attribute(df_sorted):
     # Konvertieren von 'collected_at' in das Datumsformat
-    #df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
+    df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
 
     # Initialisieren des Tagesattributs
-    #df_sorted['day'] = 0
+    df_sorted['day'] = 0
 
     # Iteration über die Daten
-    #for user_id, group in df_sorted.groupby(s_table_key):
+    for user_id, group in df_sorted.groupby(s_table_key):
         # Bestimmung des ältesten Datums pro user_id
-       # min_date = group[s_table_sort_by].min()
+        min_date = group[s_table_sort_by].min()
 
         # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-      #  df_sorted.loc[df_sorted[s_table_key] == user_id, 'day'] = (df_sorted.loc[df_sorted[s_table_key] == user_id, s_table_sort_by].dt.date - min_date.date()).dt.days + 1
+        df_sorted.loc[df_sorted[s_table_key] == user_id, 'day'] = (df_sorted.loc[df_sorted[s_table_key] == user_id, s_table_sort_by].dt.date - min_date.date()).dt.days + 1
 
         # Konvertieren in Ganzzahl
-     #   df_sorted['day'] = df_sorted['day'].astype(int)
+        df_sorted['day'] = df_sorted['day'].astype(int)
 
-    #return df_sorted
+    return df_sorted
+
 ################
 # Konvertieren von 'collected_at' in das Datumsformat
-    df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
+    #df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
 
     # Print data types and values for debugging
     #print("Data types:")
@@ -51,10 +52,10 @@ def add_day_attribute(df_sorted):
     #print(df_sorted[s_table_sort_by])
 
     # Initialisieren des Tagesattributs
-    df_sorted['day'] = 0
+   # df_sorted['day'] = 0
 
     # Bestimmung des ältesten Datums pro user_id
-    min_dates = df_sorted.groupby(s_table_key)[s_table_sort_by].transform('min')
+   # min_dates = df_sorted.groupby(s_table_key)[s_table_sort_by].transform('min')
 
     #print("Unique user_id values:")
     #print(df_sorted[s_table_key].unique())
@@ -70,12 +71,12 @@ def add_day_attribute(df_sorted):
     #print(min_dates.dtype)
 
     # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-    df_sorted['day'] = (df_sorted[s_table_sort_by].dt.date - min_dates.dt.date).dt.days + 1
+    #df_sorted['day'] = (df_sorted[s_table_sort_by].dt.date - min_dates.dt.date).dt.days + 1
 
     # Konvertieren in Ganzzahl
-    df_sorted['day'] = df_sorted['day'].astype(int)
+    #df_sorted['day'] = df_sorted['day'].astype(int)
 
-    return df_sorted
+    #return df_sorted
 
 
 def find_path(file_name):
