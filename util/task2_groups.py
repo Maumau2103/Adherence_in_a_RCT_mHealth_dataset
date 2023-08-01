@@ -166,54 +166,29 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
     return cluster_assignments, centroids
 
 
+def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
+    # Step 1: Cluster adherence percentages
+    adherence_clusters = cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters)
 
+    # Step 2: Cluster symptom severity using k_pod
+    selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
+                           'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
+    data = preprocess_data(df_sorted)
+    symptom_clusters, _ = k_pod(data, num_clusters)
 
+    # Step 3: Combine the cluster assignments
+    user_clusters = {}
+    user_ids = df_sorted['user_id'].unique()
 
-# DataFrame aus dem Datensatz erstellen (Beispiel: "data.csv" ist der Dateiname der CSV-Datei)
-#df_sorted = pd.read_csv("dataset_sorted.csv")
+    for user_id in user_ids:
+        adherence_cluster = adherence_clusters.loc[adherence_clusters['user_id'] == user_id, 'cluster_label_timeline'].values[0]
+        symptom_cluster = symptom_clusters[user_id]
 
-# Daten vorbereiten
-#df = preprocess_data(df_sorted)
+        # Combine the two cluster assignments
+        combined_cluster = (adherence_cluster, symptom_cluster)
 
-# Anzahl der gewünschten Cluster
-#num_clusters = 3
+        # Assign the user to the cluster that appears most frequently in the combined cluster assignments
+        user_cluster = max(set(combined_cluster), key=combined_cluster.count)
+        user_clusters[user_id] = user_cluster
 
-# Clustering durchführen
-#cluster_assignments, centroids = k_pod(df_sorted, num_clusters)
-
-# Cluster-Ergebnisse ausgeben
-#print("Cluster Assignments:", cluster_assignments)
-#print("Cluster Centroids:\n", centroids)
-
-#def k_pod(data, k, max_iters=100, tol=1e-6):
-    # Step 1: Initialization
- #   num_samples, num_features = data.shape
-  #  centroids = data[np.random.choice(num_samples, k, replace=False)]
-
-   # for iteration in range(max_iters):
-        # Step 2: Cluster Assignment
-    #    cluster_assignments = np.argmin(cdist(data, centroids, metric='euclidean',
-     ##                                        missing_values='NaN'), axis=1)
-
-        # Step 3: Update Centroids
-       # for c in range(k):
-        #    cluster_samples = data[cluster_assignments == c]
-         #   if len(cluster_samples) > 0:
-          #      # Compute the centroid by taking the mean of samples with valid values
-           #     centroids[c] = np.nanmean(cluster_samples, axis=0)
-
-        # Step 4: Convergence Check
-      #  if iteration > 0:
-       #     if np.all(cluster_assignments == prev_cluster_assignments):
-        #        break
-
-        #prev_cluster_assignments = cluster_assignments.copy()
-
-    #return cluster_assignments, centroids
-
-
-
-
-
-
-
+    return user_clusters

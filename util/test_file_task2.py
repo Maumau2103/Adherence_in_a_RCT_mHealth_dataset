@@ -7,6 +7,7 @@ from util.helper import data_preparation
 
 from task2_groups import *
 
+
 # Load the df_sorted DataFrame from the file
 s_file_name = 'dataset_sorted.csv'
 df_map = find_path(s_file_name)
@@ -53,14 +54,14 @@ for user_id, cluster_info in user_clusters.items():
 # Add the cluster assignments to the patient_data DataFrame
 #timeline_cluster_labels = cluster_timelines(patient_data)
 timeline_cluster_labels = cluster_timelines(patient_data, num_clusters=3)
-adherence_cluster_labels = cluster_adherence_levels(patient_data)
+adherence_cluster_labels = cluster_adherence_percentages(patient_data)
 timeline_notes_cluster_labels = cluster_note_timelines(patient_data)
 
 print("Timeline Cluster Labels:", timeline_cluster_labels)
 print("Adherence Cluster Labels:", adherence_cluster_labels)
 print("Timeline & Notes Cluster Labels:", timeline_notes_cluster_labels)
 
-#df_prepared = data_preparation(df_sorted)
+
 
 
 
