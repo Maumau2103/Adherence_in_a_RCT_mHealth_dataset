@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
-
 from task1_phases import *
 from task5_adherence_level import *
 
@@ -10,8 +9,14 @@ def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', sta
     # Cluster groups of patients using their individual binary timelines
     timelines = get_all_user_timelines(df_sorted, start_day, end_day)
 
+    # Finde die Länge des längsten Arrays
+    max_length = max(len(arr) for arr in timelines)
+
+    # Forme die inneren Arrays um, indem du Nullen hinzufügst
+    timelines_fixed_length = [arr + [0] * (max_length - len(arr)) for arr in timelines]
+
     # Convert the timelines to a NumPy array
-    timelines_data = np.array(timelines)
+    timelines_data = np.array(timelines_fixed_length)
 
     # Initialize and train K-Means model
     kmeans = KMeans(n_clusters=num_clusters)
@@ -24,14 +29,13 @@ def cluster_timelines(df_sorted, num_clusters=3, column_name='collected_at', sta
 
 
 def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
-    df = data_preparation(df_sorted)
     # Form clusters of groups of patients using the adherence percentages from task 5
     all_adh_levels = []
 
     # Iterate over each unique user ID
-    for user_id in df['user_id'].unique():
+    for user_id in df_sorted['user_id'].unique():
         # Get the adherence level for each user using the existing function
-        adh_level = get_user_adh_percentage(df, user_id, start_day, end_day)
+        adh_level = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
         all_adh_levels.append(adh_level)
 
     # Convert the adherence levels to a NumPy array
