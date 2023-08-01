@@ -1,31 +1,10 @@
-import pandas as pd
-import numpy as np
-from numpy.linalg import norm
 import math
-from sklearn.neighbors import NearestNeighbors
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from task5_adherence_level import *
 from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import RandomUnderSampler
-import matplotlib.pyplot as plt
-
-
-def task3_prediction(df, new_user, day_y, result_phases, nearest_neighbors=10, cv=10, model=0):
-    df_prediction = data_preparation(df)
-    df_newuser = data_preparation(new_user)
-
-    # Finde die k-ähnlichsten Nutzer aus dem Datensatz und speichere sie in einem neuen DataFrame
-    df_similarusers = find_similar_users(df_prediction, df_newuser, nearest_neighbors)
-
-    if model == 0:
-        # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit RandomForest
-        predictions_rf = rf_classification(df_similarusers, df_newuser, day_y, cv)
-    else:
-        # Berechnen der Adherence-Wahrscheinlichkeit für den neuen Nutzer mit SVM
-        predictions_svm = svm_classification(df_similarusers, df_newuser, day_y, cv)
 
 
 def get_newusers_adherence(df_newuser, result_phases):
@@ -214,10 +193,11 @@ def predict_phase_adherence(df_similarusers, allusers_phases, newuser_phases):
             sum_adh_percentage += similarusers_phases.iloc[j]['phases'][i]
         newuser_future_phases.append(round(sum_adh_percentage/len(similarusers_phases), 3))
 
-    print('new users adherence percentages: ' + str(newuser_phases))
-    print('new users adherence percentages in future phases: ' + str(newuser_future_phases))
+    newuser_all_phases = newuser_phases + newuser_future_phases
+    print('new users adherence percentages without future phases: ' + str(newuser_phases))
+    print('new users adherence percentages with future phases: ' + str(newuser_all_phases))
 
-    return newuser_future_phases
+    return newuser_all_phases
 
 
 def scale_data_euclidian(X):
