@@ -16,25 +16,25 @@ def get_newusers_adherence(df_newuser, result_phases):
 
     # adherence percentage für alle Phasen herausfinden
     last_change_point = 1
-    phases = []
+    newusers_phases = []
     for change_point in result_phases:
         if (newuser_length > last_change_point):
             adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, last_change_point, change_point)
-            phases.append(round(adh_percentage, 3))
+            newusers_phases.append(round(adh_percentage, 3))
             last_change_point = change_point
 
     if (newuser_length > last_change_point):
         adh_percentage = get_user_adh_percentage(df_newuser, newuser_id, start_day=last_change_point, end_day=None)
-        phases.append(round(adh_percentage, 3))
+        newusers_phases.append(round(adh_percentage, 3))
 
-    print('new users phases: ' + str(len(phases)))
-    print('new users adherence percentages: ' + str(phases))
-    return phases
+    print('number of phases: ' + str(len(newusers_phases)))
+    print('new users adherence percentages: ' + str(newusers_phases))
+    return newusers_phases
 
 
 def get_allusers_adherence(df_sorted, result_phases):
     # adherence percentage für alle Nutzer in allen Phasen herausfinden
-    user_phases = pd.DataFrame(columns=["user_id", "phases"])
+    allusers_phases = pd.DataFrame(columns=["user_id", "phases"])
     for user_id in df_sorted['user_id'].unique().tolist():
         df_user = df_sorted[df_sorted['user_id'] == user_id].copy()
         phases = []
@@ -55,9 +55,9 @@ def get_allusers_adherence(df_sorted, result_phases):
             phases.append(0)
 
         new_row = {"user_id": user_id, "phases": phases}
-        user_phases = user_phases.append(new_row, ignore_index=True)
+        allusers_phases = allusers_phases.append(new_row, ignore_index=True)
 
-    return user_phases
+    return allusers_phases
 
 
 def shorten_list(lst, n):
