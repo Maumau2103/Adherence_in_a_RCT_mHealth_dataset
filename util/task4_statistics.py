@@ -38,7 +38,7 @@ def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_da
 
     # Ersten und letzten Wert für die x-Achse festlegen
     x_start = 0
-    x_end = (len(x) - 1) // 10 * 10
+    x_end = (len(x)) // 10 * 10
 
     # Vertikale Linie zur Abgrenzung der Phasen anzeigen
     for change_point in result_phases:
