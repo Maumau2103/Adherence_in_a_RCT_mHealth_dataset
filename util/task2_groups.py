@@ -22,17 +22,17 @@ def cluster_timelines(df_sorted, num_clusters=3, start_day=None, end_day=None):
     # Cluster labels for the timelines
     timeline_cluster_labels = kmeans.labels_
 
-    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "timeline", "cluster_label"])
 
     user_ids = get_user_ids(df_sorted)
     for i in range(len(user_ids)):
-        new_row = {"user_id": user_ids[i], "cluster_label_timeline": timeline_cluster_labels[i]}
+        new_row = {"user_id": user_ids[i], "timeline": timelines_fixed_length[i], "cluster_label": timeline_cluster_labels[i]}
         allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
 
     return allusers_cluster_label
 
 
-def cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters=3):
+def cluster_adherence_percentages(allusers_phases, num_clusters=3):
     # Initialize and train K-Means model
     kmeans = KMeans(n_clusters=num_clusters)
     kmeans.fit(allusers_phases['phases'].tolist())
@@ -40,17 +40,13 @@ def cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters=3):
     # Cluster labels for the adherence levels
     adherence_cluster_labels = kmeans.labels_
 
-    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+    # assign the cluster labels to allusers_phases_2
+    allusers_phases_cluster_label = allusers_phases.assign(cluster_label=adherence_cluster_labels)
 
-    user_ids = get_user_ids(df_sorted)
-    for i in range(len(user_ids)):
-        new_row = {"user_id": user_ids[i], "cluster_label_timeline": adherence_cluster_labels[i]}
-        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
-
-    return allusers_cluster_label
+    return allusers_phases_cluster_label
 
 
-def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q11', start_day=None, end_day=None):
+def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q11'):
     notes_datas = []
 
     # Erstelle "notes_timelines" für jeden Nutzer
@@ -77,11 +73,11 @@ def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q
     # Cluster labels for the adherence levels
     adherence_cluster_labels = kmeans.labels_
 
-    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "notes_timeline", "cluster_label"])
 
     user_ids = get_user_ids(df_sorted)
     for i in range(len(user_ids)):
-        new_row = {"user_id": user_ids[i], "cluster_label_timeline": adherence_cluster_labels[i]}
+        new_row = {"user_id": user_ids[i], "notes_timeline": notes_datas_fixed_length[i], "cluster_label": adherence_cluster_labels[i]}
         allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
 
     return allusers_cluster_label

@@ -6,6 +6,7 @@ from task3_prediction import *
 from task5_adherence_level import *
 import pandas as pd
 import numpy as np
+from sklearn.decomposition import PCA
 pd.options.mode.chained_assignment = None  # default='warn'
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -62,6 +63,48 @@ def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_da
 
     # Diagramm anzeigen
     plt.show()
+
+
+def show_user_clusters(clusters):
+    # Erstellen von Features und Labels für die Reduzierung
+    X = clusters.iloc[:, 1].tolist()
+    y = clusters['cluster_label']
+
+    # Reduzieren der Datenzeilen auf 2 Features
+    pca = PCA(n_components=2)
+    X_2d = pca.fit_transform(X)
+
+    # Speichere die neuen Features in einem neuen DataFrame ab
+    df_2d = pd.DataFrame(X_2d, columns=['Feature_1', 'Feature_2'])
+    df_2d['cluster_label'] = y
+
+    # Erstellung einer benutzerdefinierten Farbpalette basierend auf der Anzahl der eindeutigen Cluster
+    unique_clusters = df_2d['cluster_label'].unique()
+    colors = sns.color_palette('husl', n_colors=len(unique_clusters))
+
+    # Erstellen der Figure und des Koordinatensystems
+    plt.figure(figsize=(10, 6))
+    ax = plt.gca()
+
+    # Schleife durch die eindeutigen Cluster
+    for i, cluster in enumerate(unique_clusters):
+        # Filtern der Datenzeilen für den aktuellen Cluster
+        cluster_data = df_2d[df_2d['cluster_label'] == cluster]
+
+        # Plotten der Punkte für den aktuellen Cluster in der entsprechenden Farbe
+        ax.scatter(cluster_data['Feature_1'], cluster_data['Feature_2'], c=[colors[i]], label=f'Cluster {cluster}',
+                   s=100)
+
+    # Beschriftungen für die Achsen und die Legende
+    ax.set_xlabel('Feature 1')
+    ax.set_ylabel('Feature 2')
+    plt.title('result of the clustering')
+    plt.legend(title='Cluster', loc='upper right')
+
+    # Anzeigen der Grafik
+    plt.show()
+
+    return df_2d
 
 
 def show_user_adherence_percentage(users_phases, user_id=None):
