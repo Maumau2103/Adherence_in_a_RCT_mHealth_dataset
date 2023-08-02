@@ -165,50 +165,13 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
 
 
 
-# DataFrame aus dem Datensatz erstellen (Beispiel: "data.csv" ist der Dateiname der CSV-Datei)
-#df_sorted = pd.read_csv("dataset_sorted.csv")
-
-# Daten vorbereiten
-#df = preprocess_data(df_sorted)
-
-# Anzahl der gewünschten Cluster
-#num_clusters = 3
-
-# Clustering durchführen
-#cluster_assignments, centroids = k_pod(df_sorted, num_clusters)
-
-# Cluster-Ergebnisse ausgeben
-#print("Cluster Assignments:", cluster_assignments)
-#print("Cluster Centroids:\n", centroids)
-
-#def k_pod(data, k, max_iters=100, tol=1e-6):
-    # Step 1: Initialization
- #   num_samples, num_features = data.shape
-  #  centroids = data[np.random.choice(num_samples, k, replace=False)]
-
-   # for iteration in range(max_iters):
-        # Step 2: Cluster Assignment
-    #    cluster_assignments = np.argmin(cdist(data, centroids, metric='euclidean',
-     ##                                        missing_values='NaN'), axis=1)
-
-        # Step 3: Update Centroids
-       # for c in range(k):
-        #    cluster_samples = data[cluster_assignments == c]
-         #   if len(cluster_samples) > 0:
-          #      # Compute the centroid by taking the mean of samples with valid values
-           #     centroids[c] = np.nanmean(cluster_samples, axis=0)
-
-        # Step 4: Convergence Check
-      #  if iteration > 0:
-       #     if np.all(cluster_assignments == prev_cluster_assignments):
-        #        break
-
-        #prev_cluster_assignments = cluster_assignments.copy()
-
-    #return cluster_assignments, centroids
-
-
-
+def assign_default_group(df, default_group_label):
+    # Create a new DataFrame with only 'user_id' and 'cluster_label' columns
+    new_df = pd.DataFrame({
+        'user_id': df['user_id'],
+        'cluster_label': default_group_label
+    })
+    return new_df
 
 
 
