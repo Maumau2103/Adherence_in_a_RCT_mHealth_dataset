@@ -32,7 +32,7 @@ def cluster_timelines(df_sorted, num_clusters=3, start_day=None, end_day=None):
     return allusers_cluster_label
 
 
-def cluster_adherence_percentages(allusers_phases, num_clusters=3):
+def cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters=3):
     # Initialize and train K-Means model
     kmeans = KMeans(n_clusters=num_clusters)
     kmeans.fit(allusers_phases['phases'].tolist())
@@ -40,10 +40,38 @@ def cluster_adherence_percentages(allusers_phases, num_clusters=3):
     # Cluster labels for the adherence levels
     adherence_cluster_labels = kmeans.labels_
 
-    # assign the cluster labels to allusers_phases_2
-    allusers_phases_cluster_label = allusers_phases.assign(cluster_label=adherence_cluster_labels)
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label_timeline"])
 
-    return allusers_phases_cluster_label
+    user_ids = get_user_ids(df_sorted)
+    for i in range(len(user_ids)):
+        new_row = {"user_id": user_ids[i], "cluster_label_timeline": adherence_cluster_labels[i]}
+        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
+
+    return allusers_cluster_label
+
+
+def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
+    df = data_preparation(df_sorted)
+    # Form clusters of groups of patients using the adherence percentages from task 5
+    all_adh_levels = []
+
+    # Iterate over each unique user ID
+    for user_id in df['user_id'].unique():
+        # Get the adherence level for each user using the existing function
+        adh_level = get_user_adh_percentage(df, user_id, start_day, end_day)
+        all_adh_levels.append(adh_level)
+
+    # Convert the adherence levels to a NumPy array
+    adh_levels_data = np.array(all_adh_levels).reshape(-1, 1)
+
+    # Initialize and train K-Means model
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(adh_levels_data)
+
+    # Cluster labels for the adherence levels
+    adherence_cluster_labels = kmeans.labels_
+
+    return adherence_cluster_labels
 
 
 def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q11'):
@@ -162,7 +190,32 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
     return cluster_assignments, centroids
 
 
+def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
+    # Step 1: Cluster adherence percentages
+    adherence_clusters = cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters)
 
+    # Step 2: Cluster symptom severity using k_pod
+    selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
+                           'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
+    data = preprocess_data(df_sorted)
+    symptom_clusters, _ = k_pod(data, num_clusters)
+
+    # Step 3: Combine the cluster assignments
+    user_clusters = {}
+    user_ids = df_sorted['user_id'].unique()
+
+    for user_id in user_ids:
+        adherence_cluster = adherence_clusters.loc[adherence_clusters['user_id'] == user_id, 'cluster_label_timeline'].values[0]
+        symptom_cluster = symptom_clusters[user_id]
+
+        # Combine the two cluster assignments
+        combined_cluster = (adherence_cluster, symptom_cluster)
+
+        # Assign the user to the cluster that appears most frequently in the combined cluster assignments
+        user_cluster = max(set(combined_cluster), key=combined_cluster.count)
+        user_clusters[user_id] = user_cluster
+
+    return user_clusters
 
 
 def assign_default_group(df, default_group_label):
