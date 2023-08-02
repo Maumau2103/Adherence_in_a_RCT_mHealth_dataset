@@ -216,3 +216,8 @@ def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
         user_clusters[user_id] = user_cluster
 
     return user_clusters
+
+def assign_default_group_to_dataframe(df, default_group_label):
+    # Create a new column in the DataFrame for the cluster assignments
+    df['cluster_label'] = default_group_label
+    return df
