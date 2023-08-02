@@ -65,7 +65,7 @@ def show_user_timeline(df_sorted, user_id, result_phases, start_day=None, end_da
     plt.show()
 
 
-def show_user_clusters(clusters):
+def show_users_clusters(clusters):
     # Erstellen von Features und Labels für die Reduzierung
     X = clusters.iloc[:, 1].tolist()
     y = clusters['cluster_label']

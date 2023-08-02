@@ -2,6 +2,7 @@ from helper import *
 from task2_groups import *
 from task1_phases import *
 from task3_prediction import *
+from task4_statistics import *
 import pandas as pd
 import warnings
 
@@ -23,7 +24,7 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #non_adherent = get_user_adh_level(df_sorted, 1, start_day=20, end_day=130)
 #show_user_adherence_percentage(newuser_all_phases)
 
-clusters_timeline = cluster_timelines(df_sorted, 1, 10)
+clusters_timeline = cluster_timelines(df_sorted)
 clusters_adherence = cluster_adherence_percentages(allusers_phases)
 clusters_notes = cluster_note_timelines(df_sorted)
 
@@ -31,6 +32,6 @@ print(clusters_timeline)
 print(clusters_adherence)
 print(clusters_notes)
 
-show_user_clusters(clusters_timeline)
-show_user_clusters(clusters_adherence)
-show_user_clusters(clusters_notes)
+show_users_clusters(clusters_timeline)
+show_users_clusters(clusters_adherence)
+show_users_clusters(clusters_notes)
