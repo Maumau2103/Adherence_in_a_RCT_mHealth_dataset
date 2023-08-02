@@ -50,6 +50,30 @@ def cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters=3):
     return allusers_cluster_label
 
 
+def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
+    df = data_preparation(df_sorted)
+    # Form clusters of groups of patients using the adherence percentages from task 5
+    all_adh_levels = []
+
+    # Iterate over each unique user ID
+    for user_id in df['user_id'].unique():
+        # Get the adherence level for each user using the existing function
+        adh_level = get_user_adh_percentage(df, user_id, start_day, end_day)
+        all_adh_levels.append(adh_level)
+
+    # Convert the adherence levels to a NumPy array
+    adh_levels_data = np.array(all_adh_levels).reshape(-1, 1)
+
+    # Initialize and train K-Means model
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(adh_levels_data)
+
+    # Cluster labels for the adherence levels
+    adherence_cluster_labels = kmeans.labels_
+
+    return adherence_cluster_labels
+
+
 def cluster_note_timelines(df_sorted, num_clusters=3, column_name='value_diary_q11', start_day=None, end_day=None):
     notes_datas = []
 

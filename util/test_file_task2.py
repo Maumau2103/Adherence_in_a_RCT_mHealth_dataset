@@ -3,6 +3,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 from util.helper import data_preparation
+import ruptures
 
 
 from task2_groups import *
