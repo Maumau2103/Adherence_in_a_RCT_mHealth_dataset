@@ -53,7 +53,7 @@ for user_id, cluster_info in user_clusters.items():
     print(f"Centroids for User ID {user_id}:\n{centroids}")
 
 # Add the cluster assignments to the patient_data DataFrame
-#timeline_cluster_labels = cluster_timelines(patient_data)
+# timeline_cluster_labels = cluster_timelines(patient_data)
 timeline_cluster_labels = cluster_timelines(patient_data, num_clusters=3)
 adherence_cluster_labels = cluster_adherence_percentages(patient_data)
 timeline_notes_cluster_labels = cluster_note_timelines(patient_data)

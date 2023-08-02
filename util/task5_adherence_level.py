@@ -40,7 +40,7 @@ def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_thre
                 adherence_group.append(user_ids[i])
 
     return adherence_group
-
+'''
 def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_day=s_end_day):
     # adh_level of 1 = low adherence, 2 = moderate, 3 = high
     cluster_levels = cluster_adherence_levels(df_sorted, 3, start_day, end_day)
@@ -78,3 +78,5 @@ def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_
             adherence_group.append(j)
 
     return adherence_group
+    
+    '''
