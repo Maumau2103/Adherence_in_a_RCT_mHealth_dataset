@@ -1,5 +1,4 @@
 from helper import *
-from task4_statistics import *
 from task2_groups import *
 from task1_phases import *
 from task3_prediction import *
@@ -9,7 +8,11 @@ import warnings
 # FutureWarning-Warnungen ignorieren
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-df_sorted = data_preparation(pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at']))
+s_file_name = 'dataset_sorted.csv'
+df_map = find_path(s_file_name)
+df_sorted = data_preparation(df_map)
+
+#df_sorted = data_preparation(pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at']))
 
 result_phases = [20, 41, 63, 84]
 allusers_phases = get_allusers_adherence(df_sorted, result_phases)

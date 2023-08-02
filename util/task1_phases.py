@@ -11,7 +11,7 @@ def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_en
     user_df = df_sorted[df_sorted[s_table_key] == key_column]
 
     # Extrahieren der Tage aus der Spalte "column" und in ein neues Datumsformat umwandeln
-    #user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
+    # user_df[column] = user_df[column].apply(lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").day)
 
 
 ###### neu eingefügt
