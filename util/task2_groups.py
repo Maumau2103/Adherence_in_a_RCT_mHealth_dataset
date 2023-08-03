@@ -167,19 +167,19 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
 
 def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
     # Step 1: Cluster adherence percentages
-    adherence_clusters = cluster_adherence_percentages(allusers_phases)
+    adherence_clusters = cluster_adherence_percentages(allusers_phases, num_clusters)
 
     # Step 2: Cluster symptom severity using k_pod
     selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
                            'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
     data = preprocess_data(df_sorted)
-    symptom_clusters, _ = k_pod(data, num_clusters)
+    symptom_clusters = k_pod(data, num_clusters)
 
     # Step 3: Combine the cluster assignments
     user_clusters = {}
-    #user_ids = df_sorted['user_id'].unique()
+    user_ids = df_sorted['user_id'].unique()
 
-    for user_id in get_user_ids(df_sorted):
+    for user_id in user_ids:
         adherence_cluster = adherence_clusters.loc[adherence_clusters['user_id'] == user_id, 'cluster_label'].values[0]
         symptom_cluster = symptom_clusters[user_id]
 
@@ -190,13 +190,15 @@ def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
         user_cluster = max(set(combined_cluster), key=combined_cluster.count)
         user_clusters[user_id] = user_cluster
 
-    return user_clusters
+    user_clusters_df = pd.DataFrame(list(user_clusters.items()), columns=['user_id', 'cluster_label'])
+
+    return user_clusters_df
 
 
 def assign_default_group(df, default_group_label):
     # Create a new DataFrame with only 'user_id' and 'cluster_label' columns
     new_df = pd.DataFrame({
-        'user_id': df['user_id'],
+        'user_id': get_user_ids(df),
         'cluster_label': default_group_label
     })
     return new_df

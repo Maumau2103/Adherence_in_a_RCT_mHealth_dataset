@@ -29,12 +29,12 @@ def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_
         if x not in helper_arr:
             value_at_1 = x
             break
-
+    user_ids = get_user_ids(df_sorted)
     sorted_clusters = [value_at_0, value_at_1, value_at_2]
     # now we now what clusters is the lowest adh_level and what is the highest
     # put all users from a specific cluster in an array based on which adh_level the user wants to have
     for j in range(len(cluster_levels)):
         if cluster_levels[j] == sorted_clusters[adh_level-1]:
-            adherence_group.append(j)
+            adherence_group.append(user_ids[j])
 
     return adherence_group
