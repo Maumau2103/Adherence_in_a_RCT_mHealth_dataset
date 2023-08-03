@@ -35,3 +35,8 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #show_users_clusters(clusters_timeline)
 #show_users_clusters(clusters_adherence)
 #show_users_clusters(clusters_notes)
+
+# Berechnung der Summe für jedes 'phases'-Array und Sortieren des DataFrames nach der berechneten Summe
+allusers_phases_sorted = allusers_phases.assign(phases_sum=allusers_phases['phases'].apply(sum)).sort_values(by='phases_sum')
+
+print(allusers_phases.iloc[0])

@@ -15,7 +15,7 @@ df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
 new_user_id = 2107
-day_y = 61
+day_y = 85
 knn = 10
 k_fold = 10
 df_newuser = df_prediction[df_prediction['user_id'] == new_user_id].copy()
@@ -28,7 +28,7 @@ print("tatsächliche Adherence für diesen Nutzer an dem Tag: " + str(df_newuser
 
 # Entfernen aller Tage ab day_y für den neuen Nutzer
 df_newuser_filtered = df_newuser.copy()
-df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered['day'] >= day_y].index)
+df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered['day'] >= 81].index)
 
 # neuen Nutzer aus dem Datensatz herausfiltern
 df_prediction_filtered = df_prediction[df_prediction['user_id'] != new_user_id]
@@ -48,7 +48,7 @@ predictions = predict_day_adherence(df_similarusers, df_newuser_filtered, day_y,
 print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit in den zukünftigen Phasen für den neuen Nutzer
-newusers_future_phases = predict_phase_adherence(df_similarusers, allusers_phases, newusers_phases)
+newusers_all_phases = predict_phase_adherence(df_similarusers, allusers_phases, newusers_phases)
 
 ### Notizen
 # alle Werte müssen numerisch sein, damit der Klassifikator funktioniert
