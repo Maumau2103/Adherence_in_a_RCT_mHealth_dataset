@@ -96,7 +96,7 @@ def add_day_y_adherent(df_similarusers, y):
     # Iteration über die Daten
     for user_id, group in df_similarusers.groupby('user_id'):
         # Überprüfen, ob der Tag y für den Nutzer vorhanden ist
-        if y in group['day'].values:
+        if y in group[s_table_sort_by_alt].tolist():
             # Setzen des day_y_adherent-Attributs auf True
             df_similarusers.loc[df_similarusers['user_id'] == user_id, 'day_y_adherent'] = 1
 
@@ -132,12 +132,12 @@ def predict_day_adherence(df_similarusers, df_newuser, day_y, k_fold, model):
     # Ausgeben der Adherence Wahrscheinlichkeit, wenn nur eine Klasse des Labels vorhanden ist
     if count_zeros == 0:
         adherence_probability = (1 + newuser_adh_percentage) / 2
-        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-        return 0
+        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.3f}")
+        return adherence_probability
     elif count_ones == 0:
         adherence_probability = (0 + newuser_adh_percentage) / 2
-        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.2f}")
-        return 0
+        print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.3f}")
+        return adherence_probability
 
     # Verhältnis der Klassen berechnen
     class_ratio = class_counts[0] / class_counts[1]
@@ -164,7 +164,7 @@ def predict_day_adherence(df_similarusers, df_newuser, day_y, k_fold, model):
     adherence_probability = ((sum(predictions) / len(predictions)) + newuser_adh_percentage) / 2
     print(f"Adherencewahrscheinlichkeit an Tag {day_y}: {adherence_probability:.3f}")
 
-    return predictions
+    return adherence_probability
 
 
 def shorten_list_2(lst, n):

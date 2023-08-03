@@ -15,7 +15,7 @@ df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
 new_user_id = 2107
-day_y = 85
+day_y = 120
 knn = 10
 k_fold = 10
 df_newuser = df_prediction[df_prediction['user_id'] == new_user_id].copy()
@@ -28,14 +28,15 @@ print("tatsächliche Adherence für diesen Nutzer an dem Tag: " + str(df_newuser
 
 # Entfernen aller Tage ab day_y für den neuen Nutzer
 df_newuser_filtered = df_newuser.copy()
-df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered['day'] >= 81].index)
+df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered['day'] >= 46].index)
 
 # neuen Nutzer aus dem Datensatz herausfiltern
 df_prediction_filtered = df_prediction[df_prediction['user_id'] != new_user_id]
 
-result_phases = [20, 41, 63, 84]
+result_phases = [17, 46, 81, 100]
 
 newusers_phases = get_newusers_adherence(df_newuser_filtered, result_phases)
+get_newusers_adherence(df_newuser, result_phases)
 allusers_phases = get_allusers_adherence(df_prediction_filtered, result_phases)
 print()
 
@@ -45,6 +46,7 @@ print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit an Tag y für den neuen Nutzer mit Random Forest
 predictions = predict_day_adherence(df_similarusers, df_newuser_filtered, day_y, k_fold, 0)
+print(predictions)
 print()
 
 # Berechnen der Adherence-Wahrscheinlichkeit in den zukünftigen Phasen für den neuen Nutzer

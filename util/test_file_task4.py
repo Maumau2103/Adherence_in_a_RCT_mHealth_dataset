@@ -15,7 +15,7 @@ df_sorted = data_preparation(df_map)
 
 #df_sorted = data_preparation(pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/dataset_sorted.csv', parse_dates=['collected_at']))
 
-result_phases = [20, 41, 63, 84]
+result_phases = [17, 46, 81, 100]
 allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #newuser_all_phases = [0.9, 0.85, 0.83, 0.8]
 #show_user_timeline(df_sorted, 2107, result_phases, start_day=1, end_day=30, step=10)
@@ -37,6 +37,9 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #show_users_clusters(clusters_notes)
 
 # Berechnung der Summe für jedes 'phases'-Array und Sortieren des DataFrames nach der berechneten Summe
-allusers_phases_sorted = allusers_phases.assign(phases_sum=allusers_phases['phases'].apply(sum)).sort_values(by='phases_sum')
+#allusers_phases_sorted = allusers_phases.assign(phases_sum=allusers_phases['phases'].apply(sum)).sort_values(by='phases_sum')
 
-print(allusers_phases.iloc[0])
+#print(allusers_phases.iloc[0])
+
+print(allusers_phases[allusers_phases['user_id'] == 40414])
+print(allusers_phases)
