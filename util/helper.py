@@ -41,43 +41,6 @@ def add_day_attribute(df_sorted):
 
     return df_sorted
 
-################
-# Konvertieren von 'collected_at' in das Datumsformat
-    #df_sorted[s_table_sort_by] = pd.to_datetime(df_sorted[s_table_sort_by])
-
-    # Print data types and values for debugging
-    #print("Data types:")
-    #print(df_sorted.dtypes)
-    #print("collected_at values:")
-    #print(df_sorted[s_table_sort_by])
-
-    # Initialisieren des Tagesattributs
-   # df_sorted['day'] = 0
-
-    # Bestimmung des ältesten Datums pro user_id
-   # min_dates = df_sorted.groupby(s_table_key)[s_table_sort_by].transform('min')
-
-    #print("Unique user_id values:")
-    #print(df_sorted[s_table_key].unique())
-
-    #print("Corresponding minimum dates:")
-    #print(min_dates.unique())
-
-    # Print data types of 'collected_at' and 'min_dates'
-    #print("Data type of 'collected_at':")
-    #print(df_sorted[s_table_sort_by].dtype)
-
-    #print("Data type of 'min_dates':")
-    #print(min_dates.dtype)
-
-    # Berechnung der Differenz in Tagen und Aktualisierung des Tagesattributs
-    #df_sorted['day'] = (df_sorted[s_table_sort_by].dt.date - min_dates.dt.date).dt.days + 1
-
-    # Konvertieren in Ganzzahl
-    #df_sorted['day'] = df_sorted['day'].astype(int)
-
-    #return df_sorted
-
 
 def find_path(file_name):
     # Suche den Projektordner basierend auf dem aktuellen Dateipfad
@@ -112,12 +75,12 @@ def data_preparation(df):
     df['value_diary_q11'] = df['value_diary_q11'].apply(lambda x: 1 if isinstance(x, str) else 0)
 
     # Umwandeln von collected_at in datetime Objekte
-    df['collected_at'] = pd.to_datetime(df['collected_at'])
+    df[s_table_sort_by] = pd.to_datetime(df[s_table_sort_by])
 
     # Aufteilung des collected_at Attributs in mehrere Spalten
-    df['collected_at_year'] = df['collected_at'].dt.year
-    df['collected_at_month'] = df['collected_at'].dt.month
-    df['collected_at_time'] = (df['collected_at'].dt.hour * 60 + df['collected_at'].dt.minute)
+    df['collected_at_year'] = df[s_table_sort_by].dt.year
+    df['collected_at_month'] = df[s_table_sort_by].dt.month
+    df['collected_at_time'] = (df[s_table_sort_by].dt.hour * 60 + df[s_table_sort_by].dt.minute)
 
     # Hinzufügen des day-Attributes
     df = add_day_attribute(df)
@@ -130,7 +93,7 @@ def data_preparation(df):
 
 def filter_df_newuser(df_newuser, y):
     df_newuser_filtered = df_newuser.copy()
-    df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered[set.s_table_sort_by_alt] >= y].index)
+    df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered[s_table_sort_by_alt] >= y].index)
     return df_newuser_filtered
 
 
@@ -139,4 +102,12 @@ def delete_test_user(df_sorted, new_user_id):
         return df_sorted[df_sorted['user_id'] != new_user_id]
     else:
         return df_sorted
+
+
+def is_adherent(df_newuser, day):
+    days = df_newuser[s_table_sort_by_alt].unique()
+    if day in days.tolist():
+        return 1
+    else:
+        return 0
 

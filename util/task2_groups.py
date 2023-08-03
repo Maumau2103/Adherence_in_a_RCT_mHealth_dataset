@@ -3,6 +3,9 @@ from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 from task1_phases import *
 from task5_adherence_level import *
+import warnings
+from sklearn.exceptions import DataConversionWarning
+warnings.filterwarnings("ignore", category=DataConversionWarning)
 
 
 def cluster_timelines(df_sorted, num_clusters=3, start_day=None, end_day=None):
