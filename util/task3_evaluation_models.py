@@ -15,14 +15,16 @@ df_prediction = data_preparation(df)
 
 ### Evaluation
 
-sum_correct_predictions = 0
+sum_accuracy_rf_model = 0
+sum_accuracy_svm_model = 0
+null_werte = 0
 for day_y in range(46,101):
     # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
-    new_user_id = 2107
+    new_user_id = 38131
     knn = 10
     k_fold = 10
     df_newuser = df_prediction[df_prediction['user_id'] == new_user_id].copy()
-    df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/user_2107.csv", index=False)
+    df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/user_38131.csv", index=False)
 
     # tatsächlicher Wert für unseren neuen User
     df_newuser_dayyadherent = df_newuser.copy()
@@ -50,15 +52,17 @@ for day_y in range(46,101):
     # Berechnen der Adherence-Wahrscheinlichkeit an Tag y für den neuen Nutzer mit Random Forest
     prediction = predict_day_adherence(df_similarusers, df_newuser_filtered, day_y, k_fold, 1)
     print()
-    if (prediction > 0.5):
-        prediction = 1
-    else:
-        prediction = 0
+    if (prediction == 0):
+        null_werte += 1
 
-    if (prediction == tatsaechliche_adherence):
-        sum_correct_predictions += 1
+    sum_accuracy_svm_model += prediction
 
-print(sum_correct_predictions)
+print(sum_accuracy_rf_model)
+print(sum_accuracy_svm_model)
 print(len(range(46,101)))
-print('accuracy = ')
-print(sum_correct_predictions / len(range(46,101)))
+print(null_werte)
+print(len(range(46,101)) - null_werte)
+print('accuracy rf = ')
+print(sum_accuracy_rf_model / (len(range(46,101)) - null_werte))
+print('accuracy svm = ')
+print(sum_accuracy_svm_model / (len(range(46,101)) - null_werte))
