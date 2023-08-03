@@ -167,7 +167,7 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
 
 def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
     # Step 1: Cluster adherence percentages
-    adherence_clusters = cluster_adherence_percentages(df_sorted, allusers_phases, num_clusters)
+    adherence_clusters = cluster_adherence_percentages(allusers_phases)
 
     # Step 2: Cluster symptom severity using k_pod
     selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
@@ -177,10 +177,10 @@ def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
 
     # Step 3: Combine the cluster assignments
     user_clusters = {}
-    user_ids = df_sorted['user_id'].unique()
+    #user_ids = df_sorted['user_id'].unique()
 
-    for user_id in user_ids:
-        adherence_cluster = adherence_clusters.loc[adherence_clusters['user_id'] == user_id, 'cluster_label_timeline'].values[0]
+    for user_id in get_user_ids(df_sorted):
+        adherence_cluster = adherence_clusters.loc[adherence_clusters['user_id'] == user_id, 'cluster_label'].values[0]
         symptom_cluster = symptom_clusters[user_id]
 
         # Combine the two cluster assignments
@@ -200,8 +200,3 @@ def assign_default_group(df, default_group_label):
         'cluster_label': default_group_label
     })
     return new_df
-
-
-
-
-

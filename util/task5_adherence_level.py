@@ -1,6 +1,7 @@
 from task1_phases import *
 from task2_groups import *
 from setup import *
+from helper import *
 
 def get_user_adh_percentage(df_sorted, user_id, start_day=s_start_day, end_day=s_end_day):
 
@@ -12,7 +13,32 @@ def get_user_adh_percentage(df_sorted, user_id, start_day=s_start_day, end_day=s
 
     return adh_percentage
 
-def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=s_start_day, end_day=s_end_day) :
+
+def cluster_adherence_levels(df_sorted, num_clusters=3, start_day=None, end_day=None):
+    # Form clusters of groups of patients using the adherence percentages from task 5
+    all_adh_levels = []
+
+    # Iterate over each unique user ID
+    for user_id in get_user_ids(df_sorted):
+        # Get the adherence level for each user using the existing function
+        adh_level = get_user_adh_percentage(df_sorted, user_id, start_day, end_day)
+        all_adh_levels.append(adh_level)
+
+    # Convert the adherence levels to a NumPy array
+    adh_levels_data = np.array(all_adh_levels).reshape(-1, 1)
+
+    # Initialize and train K-Means model
+    kmeans = KMeans(n_clusters=num_clusters)
+    kmeans.fit(adh_levels_data)
+
+    # Cluster labels for the adherence levels
+    adherence_cluster_labels = kmeans.labels_
+
+    return adherence_cluster_labels
+
+
+def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_threshold=40, start_day=s_start_day,
+                       end_day=s_end_day):
     # adh_level of 1=non-adherent, 2=partial, 3=full
     # convert percentage to decimal
     full_adh_threshold = full_adh_threshold / 100
@@ -40,6 +66,8 @@ def get_user_adh_level(df_sorted, adh_level, full_adh_threshold=80, non_adh_thre
                 adherence_group.append(user_ids[i])
 
     return adherence_group
+
+
 '''
 def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_day=s_end_day):
     # adh_level of 1 = low adherence, 2 = moderate, 3 = high
@@ -78,5 +106,5 @@ def get_user_adh_level_cluster(df_sorted, adh_level, start_day=s_start_day, end_
             adherence_group.append(j)
 
     return adherence_group
-    
+
     '''

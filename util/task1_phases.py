@@ -18,7 +18,7 @@ def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_en
         end_day = user_df[column].max()
 
     start_day = max(1, start_day) # Sicherstellen, dass start_day nicht kleiner als 1 ist
-    end_day = min(user_df[column].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
+    #end_day = min(user_df[column].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
 
     # Erstellen eines binären Arrays für die User Timeline
     timeline = []

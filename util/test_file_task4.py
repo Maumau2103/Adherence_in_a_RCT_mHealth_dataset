@@ -24,13 +24,13 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #non_adherent = get_user_adh_level(df_sorted, 1, start_day=20, end_day=130)
 #show_user_adherence_percentage(newuser_all_phases)
 
-#clusters_timeline = cluster_timelines(df_sorted)
-#clusters_adherence = cluster_adherence_percentages(allusers_phases)
-#clusters_notes = cluster_note_timelines(df_sorted)
+clusters_timeline = cluster_timelines(df_sorted)
+clusters_adherence = cluster_adherence_percentages(allusers_phases)
+clusters_notes = cluster_note_timelines(df_sorted)
 
-#print(clusters_timeline)
-#print(clusters_adherence)
-#print(clusters_notes)
+print(clusters_timeline)
+print(clusters_adherence)
+print(clusters_notes)
 
 #show_users_clusters(clusters_timeline)
 #show_users_clusters(clusters_adherence)
@@ -41,5 +41,11 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 
 #print(allusers_phases.iloc[0])
 
-print(allusers_phases[allusers_phases['user_id'] == 40414])
-print(allusers_phases)
+#print(allusers_phases[allusers_phases['user_id'] == 40414])
+#print(allusers_phases)
+
+patient_id_2222 = 2222
+patient_data = preprocess_data(df_sorted[df_sorted['user_id'] == patient_id_2222])
+cluster_assignments, centroids = k_pod(patient_data, k=3)
+
+user_clusters = combine_cluster_assignments(df_sorted[df_sorted['user_id'] == patient_id_2222], allusers_phases, num_clusters=3)
