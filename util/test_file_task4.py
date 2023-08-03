@@ -24,14 +24,21 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #non_adherent = get_user_adh_level(df_sorted, 1, start_day=20, end_day=130)
 #show_user_adherence_percentage(newuser_all_phases)
 
-clusters_timeline = cluster_timelines(df_sorted)
-clusters_adherence = cluster_adherence_percentages(allusers_phases)
-clusters_notes = cluster_note_timelines(df_sorted)
+#clusters_timeline = cluster_timelines(df_sorted)
+#clusters_adherence = cluster_adherence_percentages(allusers_phases)
+#clusters_notes = cluster_note_timelines(df_sorted)
 
-print(clusters_timeline)
-print(clusters_adherence)
-print(clusters_notes)
+#print(clusters_timeline)
+#print(clusters_adherence)
+#print(clusters_notes)
 
-show_users_clusters(clusters_timeline)
-show_users_clusters(clusters_adherence)
-show_users_clusters(clusters_notes)
+#show_users_clusters(clusters_timeline)
+#show_users_clusters(clusters_adherence)
+#show_users_clusters(clusters_notes)
+
+# Gruppierung nach 'user_id' und Ermittlung des maximalen Werts von 'day' für jeden Nutzer
+max_day_per_user = df_sorted.groupby('user_id')['day'].max()
+
+# Auswahl der user_ids, bei denen der maximale Wert von 'day' zwischen 70 und 90 liegt
+selected_user_ids = max_day_per_user.loc[(max_day_per_user >= 70) & (max_day_per_user <= 90)]
+print(selected_user_ids)

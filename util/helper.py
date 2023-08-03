@@ -128,6 +128,12 @@ def data_preparation(df):
     return df
 
 
+def filter_df_newuser(df_newuser, y):
+    df_newuser_filtered = df_newuser.copy()
+    df_newuser_filtered = df_newuser_filtered.drop(df_newuser_filtered[df_newuser_filtered[set.s_table_sort_by_alt] >= y].index)
+    return df_newuser_filtered
+
+
 def delete_test_user(df_sorted, new_user_id):
     if (new_user_id in get_user_ids(df_sorted)):
         return df_sorted[df_sorted['user_id'] != new_user_id]
