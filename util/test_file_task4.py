@@ -32,9 +32,9 @@ print(clusters_timeline)
 print(clusters_adherence)
 print(clusters_notes)
 
-#show_users_clusters(clusters_timeline)
-#show_users_clusters(clusters_adherence)
-#show_users_clusters(clusters_notes)
+show_users_clusters(clusters_timeline)
+show_users_clusters(clusters_adherence)
+show_users_clusters(clusters_notes)
 
 # Berechnung der Summe für jedes 'phases'-Array und Sortieren des DataFrames nach der berechneten Summe
 #allusers_phases_sorted = allusers_phases.assign(phases_sum=allusers_phases['phases'].apply(sum)).sort_values(by='phases_sum')
@@ -44,8 +44,8 @@ print(clusters_notes)
 #print(allusers_phases[allusers_phases['user_id'] == 40414])
 #print(allusers_phases)
 
-patient_id_2222 = 2222
-patient_data = preprocess_data(df_sorted[df_sorted['user_id'] == patient_id_2222])
-cluster_assignments, centroids = k_pod(patient_data, k=3)
+#patient_id_2222 = 2222
+#patient_data = preprocess_data(df_sorted[df_sorted['user_id'] == patient_id_2222])
+#cluster_assignments, centroids = k_pod(patient_data, k=3)
 
-user_clusters = combine_cluster_assignments(df_sorted[df_sorted['user_id'] == patient_id_2222], allusers_phases, num_clusters=3)
+#user_clusters = combine_cluster_assignments(df_sorted[df_sorted['user_id'] == patient_id_2222], allusers_phases, num_clusters=3)
