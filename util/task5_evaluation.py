@@ -94,8 +94,8 @@ def adh_level_group_average(df_sorted, full_adh_threshold=80, non_adh_threshold=
 def adh_level_group_cluster_average(df_sorted, start_day=s_start_day, end_day=s_end_day):
 
     adh_level_1 = get_user_adh_level_cluster(df_sorted, 1, start_day, end_day)
-    adh_level_2 = get_user_adh_level_cluster(df_sorted, 1, start_day, end_day)
-    adh_level_3 = get_user_adh_level_cluster(df_sorted, 1, start_day, end_day)
+    adh_level_2 = get_user_adh_level_cluster(df_sorted, 2, start_day, end_day)
+    adh_level_3 = get_user_adh_level_cluster(df_sorted, 3, start_day, end_day)
 
     all_dist_1to2 = 0
     for i1 in adh_level_1:
