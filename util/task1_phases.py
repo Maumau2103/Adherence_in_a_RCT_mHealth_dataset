@@ -6,6 +6,7 @@ from datetime import datetime
 
 from datetime import datetime
 
+
 def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_end_day, column=s_table_sort_by_alt):
     # Herausfiltern aller Einträge eines spezifischen Nutzers
     user_df = df_sorted[df_sorted[s_table_key] == key_column]
@@ -18,7 +19,6 @@ def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_en
         end_day = user_df[column].max()
 
     start_day = max(1, start_day) # Sicherstellen, dass start_day nicht kleiner als 1 ist
-    #end_day = min(user_df[column].max(), end_day)  # Sicherstellen, dass end_day nicht größer als der letzte vorhandene Tag ist
 
     # Erstellen eines binären Arrays für die User Timeline
     timeline = []
@@ -29,6 +29,7 @@ def get_user_timeline(df_sorted, key_column, start_day=s_start_day, end_day=s_en
             timeline.append(0)
 
     return timeline
+
 
 def get_all_user_timelines(df_sorted, start_day=None, end_day=None):
     # Diese Methode soll alle User Timelines in einem mehrdimensionalen Array ausgeben.
@@ -59,6 +60,7 @@ def get_all_adherence_percentage(timelines):
 
     return all_adherence_percentages
 
+
 def cpd_binseg(all_adherence_percentages):
     percentages = np.array(all_adherence_percentages).flatten()
     algo = rpt.Binseg(model="l1", jump=1)
@@ -70,6 +72,7 @@ def cpd_binseg(all_adherence_percentages):
 
     return result
 
+
 def cpd_botupseg(all_adherence_percentages):
     percentages = np.array(all_adherence_percentages).flatten()
     algo = rpt.BottomUp(model="l1", jump=1)
@@ -80,6 +83,7 @@ def cpd_botupseg(all_adherence_percentages):
         result = algo.fit_predict(percentages, pen=s_pen_change_points)
 
     return result
+
 
 def cpd_windowseg(all_adherence_percentages):
     percentages = np.array(all_adherence_percentages).flatten()

@@ -111,17 +111,18 @@ def cluster_note_timelines_2(df_sorted, num_clusters=3, column_name='collected_a
 
 
 import pandas as pd
-import numpy as np
 from scipy.spatial.distance import cdist
 
 # Given attribute names
 selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
                        'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
 
+def preprocess_data(df_sorted, aggregation_func=np.mean):
+    # Group data by user_id and apply aggregation_func
+    aggregated_data = df_sorted.groupby('user_id').agg(aggregation_func)
 
-def preprocess_data(df_sorted):
     # Extract data for the selected attributes
-    data = df_sorted[selected_attributes].to_numpy()
+    data = aggregated_data[selected_attributes].to_numpy()
 
     # Convert data to a floating-point data type
     data = data.astype(float)
@@ -132,7 +133,7 @@ def preprocess_data(df_sorted):
     return data
 
 
-def k_pod(data, k, max_iters=100, tol=1e-6):
+def k_pod(df_sorted, data, k, max_iters=100, tol=1e-6):
     # Step 1: Initialization
     num_samples, num_features = data.shape
 
@@ -162,7 +163,14 @@ def k_pod(data, k, max_iters=100, tol=1e-6):
 
         prev_cluster_assignments = cluster_assignments.copy()
 
-    return cluster_assignments, centroids
+    allusers_cluster_label = pd.DataFrame(columns=["user_id", "cluster_label"])
+
+    user_ids = get_user_ids(df_sorted)
+    for i in range(len(user_ids)):
+        new_row = {"user_id": user_ids[i], "cluster_label": cluster_assignments[i]}
+        allusers_cluster_label = allusers_cluster_label.append(new_row, ignore_index=True)
+
+    return allusers_cluster_label, centroids
 
 
 def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
@@ -173,7 +181,7 @@ def combine_cluster_assignments(df_sorted, allusers_phases, num_clusters=3):
     selected_attributes = ['value_loudness', 'value_cumberness', 'value_jawbone', 'value_neck', 'value_tin_day',
                            'value_tin_cumber', 'value_tin_max', 'value_movement', 'value_stress', 'value_emotion']
     data = preprocess_data(df_sorted)
-    symptom_clusters = k_pod(data, num_clusters)
+    symptom_clusters = k_pod(df_sorted, data, num_clusters)
 
     # Step 3: Combine the cluster assignments
     user_clusters = {}

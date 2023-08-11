@@ -9,7 +9,7 @@ s_table_drop_list = ['created_at', 'updated_at', 'collected_at_loudness', 'colle
 s_table_value_diary = "value_diary_q11"
 
 # Phases
-s_start_day = 0
+s_start_day = 1
 s_end_day = 50
 # 
 s_cpd_mode = True

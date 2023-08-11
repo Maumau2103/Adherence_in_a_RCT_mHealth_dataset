@@ -6,6 +6,7 @@ from task3_prediction import *
 from task5_adherence_level import *
 import pandas as pd
 import numpy as np
+from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.decomposition import PCA
 pd.options.mode.chained_assignment = None  # default='warn'
 import matplotlib.pyplot as plt
@@ -185,7 +186,3 @@ def show_user_statistics(df_sorted, user_id):
     result_df = pd.DataFrame([user_statistics])
 
     return result_df
-
-
-def show_cluster_timelines(df_sorted):
-    cluster = cluster_timelines(df_sorted)

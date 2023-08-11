@@ -24,17 +24,20 @@ allusers_phases = get_allusers_adherence(df_sorted, result_phases)
 #non_adherent = get_user_adh_level(df_sorted, 1, start_day=20, end_day=130)
 #show_user_adherence_percentage(newuser_all_phases)
 
-clusters_timeline = cluster_timelines(df_sorted)
-clusters_adherence = cluster_adherence_percentages(allusers_phases)
-clusters_notes = cluster_note_timelines(df_sorted)
+#clusters_timeline = cluster_timelines(df_sorted)
+#clusters_adherence = cluster_adherence_percentages(allusers_phases)
+#clusters_notes = cluster_note_timelines(df_sorted)
 
-print(clusters_timeline)
-print(clusters_adherence)
-print(clusters_notes)
+#print(clusters_timeline)
+#print(clusters_adherence)
+#print(clusters_notes)
 
-show_users_clusters(clusters_timeline)
-show_users_clusters(clusters_adherence)
-show_users_clusters(clusters_notes)
+patient_id_2222 = 2222
+preprocessed_data = preprocess_data(df_sorted)
+allusers_cluster_label, centroids = k_pod(df_sorted, preprocessed_data, k=3)
+print(allusers_cluster_label)
+print(centroids)
+print(len(allusers_cluster_label))
 
 # Berechnung der Summe für jedes 'phases'-Array und Sortieren des DataFrames nach der berechneten Summe
 #allusers_phases_sorted = allusers_phases.assign(phases_sum=allusers_phases['phases'].apply(sum)).sort_values(by='phases_sum')

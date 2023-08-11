@@ -14,12 +14,12 @@ df = pd.read_csv('C:/Users/mauri/PycharmProjects/Softwareprojekt/data/gefiltert.
 df_prediction = data_preparation(df)
 
 # Anlegen eines Test-Users mit Werten aus dem bereits vorhandenen Datensatz
-new_user_id = 38131
-day_y = 120
+new_user_id = 2107
+day_y = 60
 knn = 10
 k_fold = 10
 df_newuser = df_prediction[df_prediction['user_id'] == new_user_id].copy()
-df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/user_38131.csv", index=False)
+df_newuser.to_csv("C:/Users/mauri/PycharmProjects/Softwareprojekt/data/user_2107.csv", index=False)
 
 # tatsächlicher Wert für unseren neuen User
 df_newuser_dayyadherent = df_newuser.copy()

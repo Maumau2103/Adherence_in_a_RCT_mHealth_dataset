@@ -79,9 +79,9 @@ def data_preparation(df):
     df = add_day_attribute(df)
 
     # Gruppieren nach s_table_key und Sortieren nach s_table_sort_by
-    df = group_and_sort(df)
+    df_sorted = group_and_sort(df)
 
-    return df
+    return df_sorted
 
 
 def filter_df_newuser(df_newuser, y):
@@ -103,4 +103,3 @@ def is_adherent(df_newuser, day):
         return 1
     else:
         return 0
-
